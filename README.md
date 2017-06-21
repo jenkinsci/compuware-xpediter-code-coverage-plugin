@@ -1,2 +1,2 @@
 # CPWR-CodeCoverage
-Compuware Topaz ® interface to specify Code Coverage ® parameters
+Compuware Topaz (R) interface to specify Code Coverage (R) parameters
