@@ -1,0 +1,16 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+      <f:entry title="${%hostConnection}" field="hostConnection">
+            <f:select default=""/>
+      </f:entry>
+      
+      <f:entry title="${%analysisPropertiesPath}" field="analysisPropertiesPath">
+            <f:textbox default="${descriptor.defaultAnalysisPropertiesPath}"/>
+      </f:entry>
+      
+      <f:entry title="${%analysisProperties}" field="analysisProperties">
+            <f:textarea default="${descriptor.defaultAnalysisProperties}"/>
+      </f:entry>
+
+</j:jelly>
