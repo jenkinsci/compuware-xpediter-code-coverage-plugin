@@ -175,8 +175,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		/**
 		 * Validator for the 'Host connection' field.
 		 * 
-		 * @param value
-		 *            value passed from the config.jelly "hostConnection" field
+		 * @param hostConnection
+		 *            host connection passed from the config.jelly "hostConnection" field
 		 * 
 		 * @return validation message
 		 * 
@@ -199,6 +199,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 * 
 		 * @param context
 		 *            filter for host connections
+		 * @param hostConnection
+		 *            an existing host connection; can be null
 		 * 
 		 * @return host connection selections
 		 * 
