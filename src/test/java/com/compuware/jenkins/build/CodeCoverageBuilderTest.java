@@ -81,35 +81,35 @@ public class CodeCoverageBuilderTest
 		assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisProperties() to not be empty.", defaultAnalysisProperties.isEmpty(), is(false));
 	}
 	
-//	@Test
-//	public void builderExecutionTest()
-//	{
-//		String expectedHostConnection = "TestConnection";
-//		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
-//		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
-//
-//		String logFileOutput = null;
-//		try
-//		{
-//			FreeStyleProject project = j.createFreeStyleProject("TestProject");
-//			project.getBuildersList().add(new CodeCoverageBuilder(expectedHostConnection, expectedAnalysisPropertiesPath, expectedAnalysisProperties));
-//			FreeStyleBuild build = project.scheduleBuild2(0).get();
-//			logFileOutput = FileUtils.readFileToString(build.getLogFile());
-//
-//			assertThat(String.format("Expected log to contain %s.", expectedHostConnection), logFileOutput,
-//					containsString(expectedHostConnection));
-//
-//			assertThat(String.format("Expected log to contain %s.", expectedAnalysisPropertiesPath), logFileOutput,
-//					containsString(expectedAnalysisPropertiesPath));
-//
-//			assertThat(String.format("Expected log to contain %s.", expectedAnalysisProperties), logFileOutput,
-//					containsString(expectedAnalysisProperties));		
-//		}
-//		catch (IOException | InterruptedException | ExecutionException e)
-//		{
-//			fail(e.getMessage());
-//		}
-//	}
+	@Test
+	public void builderExecutionTest()
+	{
+		String expectedHostConnection = "TestConnection";
+		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
+		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
+
+		String logFileOutput = null;
+		try
+		{
+			FreeStyleProject project = j.createFreeStyleProject("TestProject");
+			project.getBuildersList().add(new CodeCoverageBuilder(expectedHostConnection, expectedAnalysisPropertiesPath, expectedAnalysisProperties));
+			FreeStyleBuild build = project.scheduleBuild2(0).get();
+			logFileOutput = FileUtils.readFileToString(build.getLogFile());
+
+			assertThat(String.format("Expected log to contain %s.", expectedHostConnection), logFileOutput,
+					containsString(expectedHostConnection));
+
+			assertThat(String.format("Expected log to contain %s.", expectedAnalysisPropertiesPath), logFileOutput,
+					containsString(expectedAnalysisPropertiesPath));
+
+			assertThat(String.format("Expected log to contain %s.", expectedAnalysisProperties), logFileOutput,
+					containsString(expectedAnalysisProperties));		
+		}
+		catch (IOException | InterruptedException | ExecutionException e)
+		{
+			fail(e.getMessage());
+		}
+	}
 
 	@Test
 	public void builderSaveTest()
