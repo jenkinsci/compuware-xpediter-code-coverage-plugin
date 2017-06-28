@@ -18,19 +18,26 @@ package com.compuware.jenkins.build;
 
 import static java.util.Arrays.asList;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import javax.servlet.ServletException;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
@@ -47,6 +54,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 {
 	// Member Variables
 	private final String m_hostConnection;
+	private final String m_credentialsId;
 	private final String m_analysisPropertiesPath;
 	private final String m_analysisProperties;
 
@@ -54,13 +62,15 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	 * Constructor.
 	 * 
 	 * @param hostConnection a host connection
+	 * @param credentialsId unique id of the selected credential
 	 * @param analysisPropertiesPath the path of Code Coverage analysis properties file
 	 * @param analysisProperties the Code Coverage analysis properties
 	 */
 	@DataBoundConstructor
-	public CodeCoverageBuilder(String hostConnection, String analysisPropertiesPath, String analysisProperties)
+	public CodeCoverageBuilder(String hostConnection, String credentialsId, String analysisPropertiesPath, String analysisProperties)
 	{
 		m_hostConnection = StringUtils.trimToEmpty(hostConnection);
+		m_credentialsId = StringUtils.trimToEmpty(credentialsId);
 		m_analysisPropertiesPath = StringUtils.trimToEmpty(analysisPropertiesPath);
 		m_analysisProperties = StringUtils.trimToEmpty(analysisProperties);
 	}
@@ -73,6 +83,16 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	public String getHostConnection()
 	{
 		return m_hostConnection;
+	}
+
+	/**
+	 * Gets the value of the 'Login credentials'.
+	 * 
+	 * @return <code>String</code> value of m_credentialsId
+	 */
+	public String getCredentialsId()
+	{
+		return m_credentialsId;
 	}
 
 	/**
@@ -195,6 +215,28 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		}
 
 		/**
+		 * Validator for the 'Login credentials' field.
+		 * 
+		 * @param credentialsId
+		 *            login credentials passed from the config.jelly "credentialsId" field
+		 * 
+		 * @return validation message
+		 * 
+		 * @throws IOException
+		 * @throws ServletException
+		 */
+		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId) throws IOException, ServletException
+		{
+			String tempValue = StringUtils.trimToEmpty(credentialsId);
+			if (tempValue.isEmpty() == true)
+			{
+				return FormValidation.error(Messages.checkLoginCredentialsError());
+			}
+
+			return FormValidation.ok();
+		}
+		
+		/**
 		 * Fills in the Host Connection selection box with applicable connections.
 		 * 
 		 * @param context
@@ -245,6 +287,46 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 			// //$NON-NLS-1$
 			// c.getId(), isSelected));
 			// }
+
+			return model;
+		}
+
+		/**
+		 * Fills in the Login Credentials selection box with applicable connections.
+		 * 
+		 * @param context
+		 *            filter for login credentials
+		 * @param credentialsId
+		 *            existing login credentials; can be null
+		 * 
+		 * @return login credentials selection
+		 * 
+		 * @throws IOException
+		 * @throws ServletException
+		 */
+		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
+				@AncestorInPath Item project) throws IOException, ServletException
+		{
+			List<StandardUsernamePasswordCredentials> creds = CredentialsProvider.lookupCredentials(
+					StandardUsernamePasswordCredentials.class, project, ACL.SYSTEM,
+					Collections.<DomainRequirement> emptyList());
+
+			ListBoxModel model = new ListBoxModel();
+			model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
+
+			for (StandardUsernamePasswordCredentials c : creds)
+			{
+				boolean isSelected = false;
+				if (credentialsId != null)
+				{
+					isSelected = credentialsId.matches(c.getId());
+				}
+
+				String description = Util.fixEmptyAndTrim(c.getDescription());
+				model.add(new Option(c.getUsername() + (description != null ? " (" + description + ')' : StringUtils.EMPTY),
+						// $NON-NLS-1$
+						c.getId(), isSelected));
+			}
 
 			return model;
 		}

@@ -27,6 +27,7 @@ public class Constants
 	public static final String FILE_SEPARATOR = "file.separator";
 
 	public static final String HOST_CONNECTION_PARM = "-hostConnection";
+	public static final String CREDENTIALS_ID_PARM = "-credentialsId";
 	public static final String ANALYSIS_PROPERTIES_PATH_PARM = "-analysisPropertiesPath";
 	public static final String ANALYSIS_PROPERTIES_PARM = "-analysisProperties";
 	

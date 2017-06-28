@@ -54,13 +54,17 @@ public class CodeCoverageBuilderTest
 	public void constructBuilderTest()
 	{
 		String expectedHostConnection = "TestConnection";
+		String expectedCredentialsId = "pfhvvv0";
 		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
 		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
 		
-		CodeCoverageBuilder builder = new CodeCoverageBuilder(expectedHostConnection, expectedAnalysisPropertiesPath, expectedAnalysisProperties);
+		CodeCoverageBuilder builder = new CodeCoverageBuilder(expectedHostConnection, expectedCredentialsId, expectedAnalysisPropertiesPath, expectedAnalysisProperties);
 		
 		assertThat(String.format("Expected CodeCoverageBuilder.getHostConnection() to return %s", expectedHostConnection),
 				builder.getHostConnection(), is(equalTo(expectedHostConnection)));
+		
+		assertThat(String.format("Expected CodeCoverageBuilder.getCredentialsId() to return %s", expectedCredentialsId),
+				builder.getCredentialsId(), is(equalTo(expectedCredentialsId)));
 		
 		assertThat(String.format("Expected CodeCoverageBuilder.getAnalysisPropertiesPath() to return %s", expectedAnalysisPropertiesPath),
 				builder.getAnalysisPropertiesPath(), is(equalTo(expectedAnalysisPropertiesPath)));
@@ -122,17 +126,18 @@ public class CodeCoverageBuilderTest
 //	public void roundTripTest()
 //	{
 //		String expectedHostConnection = "cw09.compuware.com";
+//		String expectedCredentialsId = "pfhvvv0";
 //		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
 //		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
 //
 //		try
 //		{
 //			FreeStyleProject project = j.createFreeStyleProject("TestProject");
-//			CodeCoverageBuilder before = new CodeCoverageBuilder(expectedHostConnection, expectedAnalysisPropertiesPath, expectedAnalysisProperties);
+//			CodeCoverageBuilder before = new CodeCoverageBuilder(expectedHostConnection, expectedCredentialsId, expectedAnalysisPropertiesPath, expectedAnalysisProperties);
 //			project.getBuildersList().add(before);
 //			
 //			j.configRoundtrip(project);
-//			j.assertLogContains("hostConnection,analysisPropertiesPath,analysisProperties,...", j.buildAndAssertSuccess(project));
+//			j.assertLogContains("hostConnection,credentialsId,analysisPropertiesPath,analysisProperties,...", j.buildAndAssertSuccess(project));
 //			
 ////			HtmlPage page = j.submit(j.createWebClient().getPage(project,"configure").getFormByName("config"));
 ////
