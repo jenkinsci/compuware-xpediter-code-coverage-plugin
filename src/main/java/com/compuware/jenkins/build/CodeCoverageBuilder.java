@@ -94,15 +94,15 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	{
 		return m_analysisProperties;
 	}
-
-	/*
+    
+    /*
 	 * (non-Javadoc)
 	 * @see hudson.tasks.Builder#getDescriptor()
 	 */
     @Override
-    public CodeCoverageBuilderDescriptor getDescriptor() 
+    public CodeCoverageDescriptorImpl getDescriptor() 
     {
-        return (CodeCoverageBuilderDescriptor)super.getDescriptor();
+        return (CodeCoverageDescriptorImpl)super.getDescriptor();
     }
 
 	/**
@@ -110,13 +110,14 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	 * options as fields, just like the <code>CodeCoverageBuilder</code> contains the configuration options for a job
 	 */
 	@Extension
-	public static final class CodeCoverageBuilderDescriptor extends BuildStepDescriptor<Builder>
+	public static final class CodeCoverageDescriptorImpl extends BuildStepDescriptor<Builder>
 	{
 		/**
 		 * In order to load the persisted global configuration, you have to call load() in the constructor.
 		 */
-		public CodeCoverageBuilderDescriptor()
+		public CodeCoverageDescriptorImpl()
 		{
+			super(CodeCoverageBuilder.class);
 			load();
 		}
 
@@ -147,7 +148,6 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) throws FormException
 		{
-			System.out.println("Attempting a save!!!");
 			save();
 			return super.configure(req, formData);
 		}

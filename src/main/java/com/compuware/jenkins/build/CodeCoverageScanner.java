@@ -75,10 +75,10 @@ public class CodeCoverageScanner
 		String hostConnection = CodeCoverageUtils.escapeForScript(m_config.getHostConnection(), isShell);
 		logger.println("Host connection: " + hostConnection); //$NON-NLS-1$
 
-		String analysisPropertiesPath = CodeCoverageUtils.escapeForScript(m_config.getHostConnection(), isShell);
+		String analysisPropertiesPath = CodeCoverageUtils.escapeForScript(m_config.getAnalysisPropertiesPath(), isShell);
 		logger.println("Analysis properties path: " + analysisPropertiesPath); //$NON-NLS-1$
 
-		String analysisProperties = CodeCoverageUtils.escapeForScript(m_config.getHostConnection(), isShell);
+		String analysisProperties = CodeCoverageUtils.escapeForScript(m_config.getAnalysisProperties(), isShell);
 		logger.println("Analysis properties: " + analysisProperties); //$NON-NLS-1$
 
 		// TODO (pfhjyg0) : fill out arguments and launch the command through the CLI once the next phase has been ironed out
