@@ -75,6 +75,9 @@ public class CodeCoverageScanner
 		String hostConnection = CodeCoverageUtils.escapeForScript(m_config.getHostConnection(), isShell);
 		logger.println("Host connection: " + hostConnection); //$NON-NLS-1$
 
+		String credentialsId = CodeCoverageUtils.escapeForScript(m_config.getCredentialsId(), isShell);
+		logger.println("Login credentials: " + credentialsId); //$NON-NLS-1$
+
 		String analysisPropertiesPath = CodeCoverageUtils.escapeForScript(m_config.getAnalysisPropertiesPath(), isShell);
 		logger.println("Analysis properties path: " + analysisPropertiesPath); //$NON-NLS-1$
 
