@@ -292,7 +292,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		}
 
 		/**
-		 * Fills in the Login Credentials selection box with applicable connections.
+		 * Fills in the Login Credentials selection box with applicable credentials.
 		 * 
 		 * @param context
 		 *            filter for login credentials
