@@ -72,7 +72,7 @@ public class CodeCoverageScanner
 		// is ironed out
 		logger.println("Performing Code Coverage..."); //$NON-NLS-1$
 
-		String hostConnection = CodeCoverageUtils.escapeForScript(m_config.getHostConnection().getConnectionName(), isShell);
+		String hostConnection = CodeCoverageUtils.escapeForScript(m_config.getHostConnection().getDescription(), isShell);
 		String connectionId = CodeCoverageUtils.escapeForScript(m_config.getConnectionId(), isShell);
 		logger.println("Host connection: " + hostConnection); //$NON-NLS-1$
 		logger.println("Host connection ID: " + connectionId); //$NON-NLS-1$

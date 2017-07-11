@@ -289,7 +289,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 					isSelected = connectionId.matches(connection.getConnectionId());
 				}
 
-				model.add(new Option(connection.getConnectionName() + " [" + connection.getHostPort() + ']', connection.getConnectionId(), isSelected)); //$NON-NLS-1$
+				model.add(new Option(connection.getDescription() + " [" + connection.getHostPort() + ']', connection.getConnectionId(), isSelected)); //$NON-NLS-1$
 			}
 
 			return model;
