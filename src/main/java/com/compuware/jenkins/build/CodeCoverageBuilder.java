@@ -30,6 +30,8 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.jenkins.build.utils.Constants;
+import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
+import com.compuware.jenkins.common.configuration.HostConnection;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -54,7 +56,7 @@ import net.sf.json.JSONObject;
 public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 {
 	// Member Variables
-	private final String m_hostConnection;
+	private final String m_connectionId;
 	private final String m_credentialsId;
 	private final String m_analysisPropertiesPath;
 	private final String m_analysisProperties;
@@ -62,8 +64,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	/**
 	 * Constructor.
 	 * 
-	 * @param hostConnection
-	 *            a host connection
+	 * @param connectionId
+				  a unique host connection identifier
 	 * @param credentialsId
 	 *            unique id of the selected credential
 	 * @param analysisPropertiesPath
@@ -72,13 +74,35 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	 *            the Code Coverage analysis properties
 	 */
 	@DataBoundConstructor
-	public CodeCoverageBuilder(String hostConnection, String credentialsId, String analysisPropertiesPath,
+	public CodeCoverageBuilder(String connectionId, String credentialsId, String analysisPropertiesPath,
 			String analysisProperties)
 	{
-		m_hostConnection = StringUtils.trimToEmpty(hostConnection);
+		m_connectionId = StringUtils.trimToEmpty(connectionId);
 		m_credentialsId = StringUtils.trimToEmpty(credentialsId);
 		m_analysisPropertiesPath = StringUtils.trimToEmpty(analysisPropertiesPath);
 		m_analysisProperties = StringUtils.trimToEmpty(analysisProperties);
+	}
+	
+	/**
+	 * Get a host connection for the current host connection unique identifier
+	 * 
+	 * @return a <code>HostConnection</code>; can be null
+	 */
+	public HostConnection getHostConnection()
+	{
+		HostConnection hostConnection = null;
+		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
+		HostConnection[] hostConnections = globalConfig.getHostConnections();
+
+		for (HostConnection connection : hostConnections)
+		{
+			if (m_connectionId != null && m_connectionId.matches(connection.getConnectionId()))
+			{
+				hostConnection = connection;
+			}
+		}
+	
+		return hostConnection;
 	}
 
 	/**
@@ -99,6 +123,16 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	public String getPort()
 	{
 		return StringUtils.substringAfter(m_hostConnection, Constants.COLON);
+	}
+	
+	/**
+	 * Gets the unique identifier of the 'Host connection'.
+	 * 
+	 * @return <code>String</code> value of m_connectionId
+	 */
+	public String getConnectionId()
+	{
+		return m_connectionId;
 	}
 
 	/**
@@ -215,17 +249,17 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		/**
 		 * Validator for the 'Host connection' field.
 		 * 
-		 * @param hostConnection
-		 *            host connection passed from the config.jelly "hostConnection" field
+		 * @param connectionId
+		 *            unique identifier for the host connection passed from the config.jelly "connectionId" field
 		 * 
 		 * @return validation message
 		 * 
 		 * @throws IOException
 		 * @throws ServletException
 		 */
-		public FormValidation doCheckHostConnection(@QueryParameter String hostConnection) throws IOException, ServletException
+		public FormValidation doCheckConnectionId(@QueryParameter String connectionId) throws IOException, ServletException
 		{
-			String tempValue = StringUtils.trimToEmpty(hostConnection);
+			String tempValue = StringUtils.trimToEmpty(connectionId);
 			if (tempValue.isEmpty() == true)
 			{
 				return FormValidation.error(Messages.checkHostConnectionError());
@@ -255,64 +289,45 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 			return FormValidation.ok();
 		}
-		
+
 		/**
 		 * Fills in the Host Connection selection box with applicable connections.
 		 * 
 		 * @param context
 		 *            filter for host connections
-		 * @param hostConnection
-		 *            an existing host connection; can be null
+		 * @param connectionId
+		 *            an existing host connection identifier; can be null
 		 * 
 		 * @return host connection selections
 		 * 
 		 * @throws IOException
 		 * @throws ServletException
 		 */
-		public ListBoxModel doFillHostConnectionItems(@AncestorInPath Jenkins context, @QueryParameter String hostConnection,
+		public ListBoxModel doFillConnectionIdItems(@AncestorInPath Jenkins context, @QueryParameter String connectionId,
 				@AncestorInPath Item project) throws IOException, ServletException
 		{
-			// TODO (pfhjyg0) : Fill out items when 'common' plugin has been created; for now use dummy data and keep example
-			// code commented out
-			// List<StandardUsernamePasswordCredentials> creds = CredentialsProvider.lookupCredentials(
-			// StandardUsernamePasswordCredentials.class, project, ACL.SYSTEM,
-			// Collections.<DomainRequirement> emptyList());
+			CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
+			HostConnection[] hostConnections = globalConfig.getHostConnections();
 
 			ListBoxModel model = new ListBoxModel();
 			model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
 
-			for (String s : Arrays.asList("cw01.compuware.com", "cw09.compuware.com")) //$NON-NLS-1$ //$NON-NLS-2$
+			for (HostConnection connection : hostConnections)
 			{
 				boolean isSelected = false;
-				if (hostConnection != null)
+				if (connectionId != null)
 				{
-					isSelected = hostConnection.matches(s);
+					isSelected = connectionId.matches(connection.getConnectionId());
 				}
 
-				model.add(new Option(s, s, isSelected));
+				model.add(new Option(connection.getDescription() + " [" + connection.getHostPort() + ']', connection.getConnectionId(), isSelected)); //$NON-NLS-1$
 			}
-
-			// TODO (pfhjyg0) : Fill out items when 'common' plugin has been created; for now use dummy data and keep example
-			// code commented out
-			// for (StandardUsernamePasswordCredentials c : creds)
-			// {
-			// boolean isSelected = false;
-			// if (hostConnection != null)
-			// {
-			// isSelected = hostConnection.matches(c.getId());
-			// }
-			//
-			// String description = Util.fixEmptyAndTrim(c.getDescription());
-			// model.add(new Option(c.getUsername() + (description != null ? " (" + description + ')' : StringUtils.EMPTY),
-			// //$NON-NLS-1$
-			// c.getId(), isSelected));
-			// }
 
 			return model;
 		}
 
 		/**
-		 * Fills in the Login Credentials selection box with applicable credentials.
+		 * Fills in the Login Credentials selection box with applicable connections.
 		 * 
 		 * @param context
 		 *            filter for login credentials

@@ -80,6 +80,7 @@ public class CodeCoverageScanner
 		boolean isShell = launcher.isUnix();
 		String osFile = isShell ? Constants.TOPAZ_CLI_SH : Constants.TOPAZ_CLI_BAT;
 
+<<<<<<< HEAD
 		String cliScriptFile = globalConfig.getTopazCLILocation(launcher) + remoteFileSeparator + osFile;
 		logger.println("cliScriptFile: " + cliScriptFile); //$NON-NLS-1$
 		String cliScriptFileRemote = new FilePath(vChannel, cliScriptFile).getRemote();
@@ -90,6 +91,26 @@ public class CodeCoverageScanner
 				m_config.getCredentialsId());
 		String userId = CodeCoverageUtils.escapeForScript(credentials.getUsername(), isShell);
 		String password = CodeCoverageUtils.escapeForScript(credentials.getPassword().getPlainText(), isShell);
+=======
+		// TODO (pfhjyg0) : get the global Topaz CLI information from the 'common' plugin when it is created
+		// String cliScriptFile = m_config.getTopazCLILocation(launcher) + remoteFileSeparator + osFile;
+		// logger.println("cliScriptFile: " + cliScriptFile); //$NON-NLS-1$
+		//
+		// String cliScriptFileRemote = new FilePath(vChannel, cliScriptFile).getRemote();
+		// logger.println("cliScriptFileRemote: " + cliScriptFileRemote); //$NON-NLS-1$
+
+		// TODO (pfhjyg0) : Log all UI parameters for now to show task completion; possibly remove the logging once next phase
+		// is ironed out
+		logger.println("Performing Code Coverage..."); //$NON-NLS-1$
+
+		String hostConnection = CodeCoverageUtils.escapeForScript(m_config.getHostConnection().getDescription(), isShell);
+		String connectionId = CodeCoverageUtils.escapeForScript(m_config.getConnectionId(), isShell);
+		logger.println("Host connection: " + hostConnection); //$NON-NLS-1$
+		logger.println("Host connection ID: " + connectionId); //$NON-NLS-1$
+
+		String credentialsId = CodeCoverageUtils.escapeForScript(m_config.getCredentialsId(), isShell);
+		logger.println("Login credentials: " + credentialsId); //$NON-NLS-1$
+>>>>>>> refs/remotes/origin/CWE-115482_PullHostConnectionsFromGlobalCfg
 
 		String analysisPropertiesPath = CodeCoverageUtils.escapeForScript(m_config.getAnalysisPropertiesPath(), isShell);
 		logger.println("Analysis properties path: " + analysisPropertiesPath); //$NON-NLS-1$

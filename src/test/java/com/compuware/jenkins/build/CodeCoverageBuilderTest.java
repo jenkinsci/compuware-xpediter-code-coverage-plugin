@@ -22,6 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import com.compuware.jenkins.build.CodeCoverageBuilder.CodeCoverageDescriptorImpl;
+import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
+import com.compuware.jenkins.common.configuration.HostConnection;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.FreeStyleBuild;
@@ -54,16 +56,16 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void constructBuilderTest()
 	{
-		String expectedHostConnection = "TestConnection";
+		String expectedConnectionId = "TestConnection";
 		String expectedCredentialsId = "pfhvvv0";
 		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
 		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
 
-		CodeCoverageBuilder builder = new CodeCoverageBuilder(expectedHostConnection, expectedCredentialsId,
+		CodeCoverageBuilder builder = new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
 				expectedAnalysisPropertiesPath, expectedAnalysisProperties);
 
-		assertThat(String.format("Expected CodeCoverageBuilder.getHostConnection() to return %s", expectedHostConnection),
-				builder.getHostConnection(), is(equalTo(expectedHostConnection)));
+		assertThat(String.format("Expected CodeCoverageBuilder.getHostConnection() to return %s", expectedConnectionId),
+				builder.getHostConnection().getConnectionId(), is(equalTo(expectedConnectionId)));
 
 		assertThat(String.format("Expected CodeCoverageBuilder.getCredentialsId() to return %s", expectedCredentialsId),
 				builder.getCredentialsId(), is(equalTo(expectedCredentialsId)));
@@ -161,24 +163,50 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void roundTripTest()
 	{
-		String expectedHostConnection = "cw09.compuware.com";
-		String expectedCredentialsId = "pfhvvv0";
+		String expectedConnectionId = "1234";
+		String expectedCredentialsId = "5678";
 		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
 		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
 
 		try
 		{
 			FreeStyleProject project = j.createFreeStyleProject("TestProject");
-			CodeCoverageBuilder before = new CodeCoverageBuilder(expectedHostConnection, expectedCredentialsId,
+			CodeCoverageBuilder before = new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
 					expectedAnalysisPropertiesPath, expectedAnalysisProperties);
 			project.getBuildersList().add(before);
-			j.assertEqualBeans(before, j.configRoundtrip(before), "hostConnection,analysisPropertiesPath,analysisProperties");
+			j.assertEqualBeans(before, j.configRoundtrip(before), "connectionId,credentialsId,analysisPropertiesPath,analysisProperties");
 		}
 		catch (Exception e)
 		{
 			fail(e.getMessage());
 		}
 	}
+	
+//	@Test
+//	public void roundTripGlobalConfigAndCodeCoverageTest()
+//	{
+//		FreeStyleProject project = j.createFreeStyleProject("TestProject");
+//		CpwrGlobalConfiguration config = new CpwrGlobalConfiguration();
+//		HostConnection[] hostConnections = new HostConnection[2];
+//		hostConnections[0] = new HostConnection("My Connection", "cw01:2020","1047", null);
+//		hostConnections[0] = new HostConnection("My Connection", "cw09:2020","1047", null);
+//		config.setHostConnections(hostConnections);
+//		project.addProperty(config);
+//        j.configRoundtrip((Item)config);
+//		j.configRoundtrip(project);
+//		
+//        // Set global configuration for the plugin
+//        HtmlPage p = j.createWebClient().goTo("configure");        
+//        HtmlForm form = p.getFormByName("configure");        
+//        
+//        HtmlInput url = form.getInputByName("_.url");
+//        url.setValueAttribute("http://localhost:1234/");
+//
+//        HtmlInput apiKey = form.getInputByName("_.apiKey");
+//        apiKey.setValueAttribute("mykey");
+//        
+//        form.submit();		
+//	}
 
 	// TODO (pfhjyg0) : to be handled later, when actually performing Code Coverage.
 	private class TestScanner extends CodeCoverageScanner
