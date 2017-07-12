@@ -77,28 +77,6 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	}
 
 	/**
-	 * Get a host connection for the current host connection unique identifier
-	 * 
-	 * @return a <code>HostConnection</code>; can be null
-	 */
-	public HostConnection getHostConnection()
-	{
-		HostConnection hostConnection = null;
-		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
-		HostConnection[] hostConnections = globalConfig.getHostConnections();
-
-		for (HostConnection connection : hostConnections)
-		{
-			if (m_connectionId != null && m_connectionId.matches(connection.getConnectionId()))
-			{
-				hostConnection = connection;
-			}
-		}
-
-		return hostConnection;
-	}
-
-	/**
 	 * Gets the unique identifier of the 'Host connection'.
 	 * 
 	 * @return <code>String</code> value of m_connectionId
