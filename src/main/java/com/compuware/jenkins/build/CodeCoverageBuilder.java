@@ -16,8 +16,8 @@
  */
 package com.compuware.jenkins.build;
 
-import static java.util.Arrays.asList;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -29,6 +29,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.compuware.jenkins.build.utils.Constants;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -61,13 +62,18 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	/**
 	 * Constructor.
 	 * 
-	 * @param hostConnection a host connection
-	 * @param credentialsId unique id of the selected credential
-	 * @param analysisPropertiesPath the path of Code Coverage analysis properties file
-	 * @param analysisProperties the Code Coverage analysis properties
+	 * @param hostConnection
+	 *            a host connection
+	 * @param credentialsId
+	 *            unique id of the selected credential
+	 * @param analysisPropertiesPath
+	 *            the path of Code Coverage analysis properties file
+	 * @param analysisProperties
+	 *            the Code Coverage analysis properties
 	 */
 	@DataBoundConstructor
-	public CodeCoverageBuilder(String hostConnection, String credentialsId, String analysisPropertiesPath, String analysisProperties)
+	public CodeCoverageBuilder(String hostConnection, String credentialsId, String analysisPropertiesPath,
+			String analysisProperties)
 	{
 		m_hostConnection = StringUtils.trimToEmpty(hostConnection);
 		m_credentialsId = StringUtils.trimToEmpty(credentialsId);
@@ -76,13 +82,23 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	}
 
 	/**
-	 * Gets the value of the 'Host connection'.
+	 * Gets the value of the host.
 	 * 
-	 * @return <code>String</code> value of m_hostConnection
+	 * @return the <code>String</code> host
 	 */
-	public String getHostConnection()
+	public String getHost()
 	{
-		return m_hostConnection;
+		return StringUtils.substringBefore(m_hostConnection, Constants.COLON);
+	}
+
+	/**
+	 * Gets the value of the port.
+	 * 
+	 * @return the <code>String</code> port
+	 */
+	public String getPort()
+	{
+		return StringUtils.substringAfter(m_hostConnection, Constants.COLON);
 	}
 
 	/**
@@ -122,7 +138,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
     @Override
     public CodeCoverageDescriptorImpl getDescriptor() 
     {
-        return (CodeCoverageDescriptorImpl)super.getDescriptor();
+		return (CodeCoverageDescriptorImpl) super.getDescriptor();
     }
 
 	/**
@@ -133,6 +149,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	public static final class CodeCoverageDescriptorImpl extends BuildStepDescriptor<Builder>
 	{
 		/**
+		 * Constructor.
+		 * <p>
 		 * In order to load the persisted global configuration, you have to call load() in the constructor.
 		 */
 		public CodeCoverageDescriptorImpl()
@@ -145,6 +163,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 * (non-Javadoc)
 		 * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
 		 */
+		@Override
 		@SuppressWarnings("rawtypes")
 		public boolean isApplicable(Class<? extends AbstractProject> aClass)
 		{
@@ -156,6 +175,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 * (non-Javadoc)
 		 * @see hudson.model.Descriptor#getDisplayName()
 		 */
+		@Override
 		public String getDisplayName()
 		{
 			return Messages.descriptorDisplayName();
@@ -261,7 +281,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 			ListBoxModel model = new ListBoxModel();
 			model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
 
-			for (String s : asList("cw01.compuware.com", "cw09.compuware.com")) //$NON-NLS-1$ //$NON-NLS-2$
+			for (String s : Arrays.asList("cw01.compuware.com", "cw09.compuware.com")) //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				boolean isSelected = false;
 				if (hostConnection != null)
@@ -323,8 +343,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 				}
 
 				String description = Util.fixEmptyAndTrim(c.getDescription());
-				model.add(new Option(c.getUsername() + (description != null ? " (" + description + ')' : StringUtils.EMPTY),
-						// $NON-NLS-1$
+				model.add(new Option(c.getUsername() + (description != null ? " (" + description + ')' : StringUtils.EMPTY), //$NON-NLS-1$
 						c.getId(), isSelected));
 			}
 
@@ -332,7 +351,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		}
 	}
 
-	/* (non-Javadoc)
+	/* 
+	 * (non-Javadoc)
 	 * @see jenkins.tasks.SimpleBuildStep#perform(hudson.model.Run, hudson.FilePath, hudson.Launcher, hudson.model.TaskListener)
 	 */
 	@Override
