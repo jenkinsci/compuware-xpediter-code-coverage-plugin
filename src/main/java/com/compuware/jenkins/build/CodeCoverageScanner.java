@@ -122,10 +122,15 @@ public class CodeCoverageScanner
 			String key = prefixWithDash((String) entry.getKey());
 			String value = CodeCoverageUtils.escapeForScript((String) entry.getValue(), isShell);
 			logger.print(key + '=' + value + ' ');
-
 			args.add(key, value);
 		}
 		logger.println();
+		
+		String connectionId = m_config.getConnectionId();
+		logger.println("Host connection ID: " + CodeCoverageUtils.escapeForScript(connectionId, isShell)); //$NON-NLS-1$
+		
+		String description = CodeCoverageUtils.escapeForScript(globalConfig.getHostConnection(connectionId).getDescription(), isShell);
+		logger.println("Host connection: " + description); //$NON-NLS-1$
 
 		FilePath workDir = new FilePath(vChannel, workspace.getRemote());
 		workDir.mkdirs();

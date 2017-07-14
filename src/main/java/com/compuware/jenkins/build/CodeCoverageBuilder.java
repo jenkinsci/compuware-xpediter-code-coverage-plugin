@@ -80,7 +80,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		m_analysisPropertiesPath = StringUtils.trimToEmpty(analysisPropertiesPath);
 		m_analysisProperties = StringUtils.trimToEmpty(analysisProperties);
 	}
-	
+
 	/**
 	 * Gets the unique identifier of the 'Host connection'.
 	 * 

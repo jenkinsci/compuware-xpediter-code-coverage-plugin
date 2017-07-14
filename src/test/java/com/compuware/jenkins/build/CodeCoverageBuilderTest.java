@@ -13,7 +13,8 @@ package com.compuware.jenkins.build;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import java.io.IOException;
@@ -21,13 +22,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.kohsuke.stapler.Stapler;
 import com.compuware.jenkins.build.CodeCoverageBuilder.CodeCoverageDescriptorImpl;
+import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Code Coverage Builder tests.
@@ -41,11 +46,39 @@ public class CodeCoverageBuilderTest
 	// TODO (pfhjyg0) : to be handled later, when actually performing Code Coverage.
 	private TestScanner m_testScanner = null;
 
+	private CpwrGlobalConfiguration m_globalConfig = null;
+
 	@Before
 	public void setup()
 	{
 		// TODO (pfhjyg0) : to be handled later, when actually performing Code Coverage.
 		m_testScanner = new TestScanner(null);
+
+		try
+		{
+			JSONObject json = new JSONObject();
+
+			JSONObject hostConnection = new JSONObject();
+			hostConnection.put("description", "TestConnection");
+			hostConnection.put("hostPort", "cw01:30947");
+			hostConnection.put("codePage", "1047");
+			hostConnection.put("connectionId", "1243");
+
+			JSONArray hostConnections = new JSONArray();
+			hostConnections.add(hostConnection);
+
+			json.put("hostConn", hostConnections);
+
+			json.put("topazCLILocationWindows", "/opt/Compuware/TopazCLI");
+			json.put("topazCLILocationLinux", "C:\\Program Files\\Compuware\\Topaz Workbench CLI");
+
+			m_globalConfig = CpwrGlobalConfiguration.get();
+			m_globalConfig.configure(Stapler.getCurrentRequest(), json);
+		}
+		catch (Exception e)
+		{
+			fail(e.getMessage());
+		}
 	}
 
 	/**
@@ -54,8 +87,8 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void constructBuilderTest()
 	{
-		String expectedConnectionId = "TestConnection";
-		String expectedCredentialsId = "pfhvvv0";
+		String expectedConnectionId = "1243";
+		String expectedCredentialsId = "45";
 		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
 		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
 
@@ -84,55 +117,63 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void descriptorValuesTest()
 	{
-		CodeCoverageBuilder builder = new CodeCoverageBuilder(null, null, null, null);
-		CodeCoverageDescriptorImpl descriptor = (CodeCoverageDescriptorImpl) builder.getDescriptor();
+		try
+		{
+			CodeCoverageDescriptorImpl descriptor = new CodeCoverageDescriptorImpl();
 
-		String displayName = descriptor.getDisplayName();
-		assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDisplayName() to not be null.", displayName,
-				is(notNullValue()));
-		assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDisplayName() to not be empty.", displayName.isEmpty(),
-				is(false));
+			String displayName = descriptor.getDisplayName();
+			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDisplayName() to not be null.", displayName,
+					is(notNullValue()));
+			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDisplayName() to not be empty.", displayName.isEmpty(),
+					is(false));
 
-		String defaultAnalysisPropertiesPath = descriptor.getDefaultAnalysisPropertiesPath();
-		assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisPropertiesPath() to not be null.",
-				defaultAnalysisPropertiesPath, is(notNullValue()));
-		assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisPropertiesPath() to not be empty.",
-				defaultAnalysisPropertiesPath.isEmpty(), is(false));
+			String defaultAnalysisPropertiesPath = descriptor.getDefaultAnalysisPropertiesPath();
+			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisPropertiesPath() to not be null.",
+					defaultAnalysisPropertiesPath, is(notNullValue()));
+			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisPropertiesPath() to not be empty.",
+					defaultAnalysisPropertiesPath.isEmpty(), is(false));
 
-		String defaultAnalysisProperties = descriptor.getDefaultAnalysisProperties();
-		assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisProperties() to not be null.",
-				defaultAnalysisProperties, is(notNullValue()));
-		assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisProperties() to not be empty.",
-				defaultAnalysisProperties.isEmpty(), is(false));
+			String defaultAnalysisProperties = descriptor.getDefaultAnalysisProperties();
+			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisProperties() to not be null.",
+					defaultAnalysisProperties, is(notNullValue()));
+			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisProperties() to not be empty.",
+					defaultAnalysisProperties.isEmpty(), is(false));
+		}
+		catch (Exception e)
+		{
+			fail(e.getMessage());
+		}
 	}
 
 	/**
 	 * Tests the results of an execution.
+	 * 
 	 * <p>
 	 * A project is created, configured and executed where the log is examined to verify results.
 	 */
 	@Test
 	public void executionTest()
 	{
-		String expectedHostConnection = "TestConnection";
-		String expectedCredentialsId = "pfhvvv0";
+		String expectedConnectionId = "1243";
+		String expectedCredentialsId = "5432";
 		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
 		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
 
 		try
 		{
 			FreeStyleProject project = j.createFreeStyleProject("TestProject");
-			project.getBuildersList().add(new CodeCoverageBuilder(expectedHostConnection, expectedCredentialsId,
+			project.getBuildersList().add(new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
 					expectedAnalysisPropertiesPath, expectedAnalysisProperties));
 
 			FreeStyleBuild build = j.buildAndAssertSuccess(project);
 
-			// Could use JenkinsRule.java#assertLogContains(String, Run), but message on failure was odd regarding expected value.
+			// Could use JenkinsRule.java#assertLogContains(String, Run), but message on failure was odd regarding expected
+			// value.
 
 			String logFileOutput = JenkinsRule.getLog(build);
 
-			assertThat(String.format("Expected log to contain Host connection: \"%s\".", expectedHostConnection), logFileOutput,
-					containsString(expectedHostConnection));
+			assertThat(String.format("Expected log to contain Host connection: \"%s\".", expectedConnectionId), logFileOutput,
+					containsString(expectedConnectionId));
 
 			assertThat(String.format("Expected log to contain Login credentials: \"%s\".", expectedCredentialsId),
 					logFileOutput, containsString(expectedCredentialsId));
@@ -152,6 +193,7 @@ public class CodeCoverageBuilderTest
 
 	/**
 	 * Perform a round trip test on the Code Coverage configuration builder.
+	 * 
 	 * <p>
 	 * A project is created, configured, submitted / saved, and reloaded where the original configuration is compared against
 	 * the reloaded configuration for equality.
@@ -159,8 +201,8 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void roundTripTest()
 	{
-		String expectedConnectionId = "1234";
-		String expectedCredentialsId = "5678";
+		String expectedConnectionId = "1243";
+		String expectedCredentialsId = "456";
 		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
 		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
 
@@ -170,39 +212,24 @@ public class CodeCoverageBuilderTest
 			CodeCoverageBuilder before = new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
 					expectedAnalysisPropertiesPath, expectedAnalysisProperties);
 			project.getBuildersList().add(before);
-			j.assertEqualBeans(before, j.configRoundtrip(before), "connectionId,credentialsId,analysisPropertiesPath,analysisProperties");
+
+			// workaround for eclipse compiler Ambiguous method call
+			project.save();
+			j.jenkins.reload();
+
+			FreeStyleProject reloaded = j.jenkins.getItemByFullName(project.getFullName(), FreeStyleProject.class);
+			assertNotNull(reloaded);
+
+			CodeCoverageBuilder after = reloaded.getBuildersList().get(CodeCoverageBuilder.class);
+			assertNotNull(after);
+
+			j.assertEqualBeans(before, after, "connectionId,credentialsId,analysisPropertiesPath,analysisProperties");
 		}
 		catch (Exception e)
 		{
 			fail(e.getMessage());
 		}
 	}
-	
-//	@Test
-//	public void roundTripGlobalConfigAndCodeCoverageTest()
-//	{
-//		FreeStyleProject project = j.createFreeStyleProject("TestProject");
-//		CpwrGlobalConfiguration config = new CpwrGlobalConfiguration();
-//		HostConnection[] hostConnections = new HostConnection[2];
-//		hostConnections[0] = new HostConnection("My Connection", "cw01:2020","1047", null);
-//		hostConnections[0] = new HostConnection("My Connection", "cw09:2020","1047", null);
-//		config.setHostConnections(hostConnections);
-//		project.addProperty(config);
-//        j.configRoundtrip((Item)config);
-//		j.configRoundtrip(project);
-//		
-//        // Set global configuration for the plugin
-//        HtmlPage p = j.createWebClient().goTo("configure");        
-//        HtmlForm form = p.getFormByName("configure");        
-//        
-//        HtmlInput url = form.getInputByName("_.url");
-//        url.setValueAttribute("http://localhost:1234/");
-//
-//        HtmlInput apiKey = form.getInputByName("_.apiKey");
-//        apiKey.setValueAttribute("mykey");
-//        
-//        form.submit();		
-//	}
 
 	// TODO (pfhjyg0) : to be handled later, when actually performing Code Coverage.
 	private class TestScanner extends CodeCoverageScanner
