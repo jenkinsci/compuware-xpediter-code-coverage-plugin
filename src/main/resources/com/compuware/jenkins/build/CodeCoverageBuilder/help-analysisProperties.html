@@ -1,1 +1,21 @@
-<div>The code page to be used for this connection. The code page is used to translate data sent to and from the host. The default is 1047.</div>
+<div>
+  <p>
+  This field allows to pass some configuration parameters to Code Coverage. Parameters defined here take precedence over the ones potentially defined in the specified codecoverage.properties file. It is even possible to specify all Code Coverage parameters here and leave the "Analysis Properties Path" input field empty.
+  </p>
+<pre style="border: solid #BBBBBB 1px; padding: 1em">
+# Relative path to source directory (required)
+cc.source=/src
+
+# Code Coverage repository (required)
+cc.repos=pfhjyg0.xv20.reposit
+
+# System (Optional)
+cc.system=
+
+# Test (Optional)
+cc.test=
+
+# DDIO (Optional)
+cc.ddio.override=
+</pre>
+</div>

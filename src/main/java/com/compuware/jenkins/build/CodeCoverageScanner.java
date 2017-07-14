@@ -13,6 +13,7 @@ package com.compuware.jenkins.build;
 import java.io.IOException;
 import java.io.PrintStream;
 import com.compuware.jenkins.build.utils.CodeCoverageUtils;
+import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
@@ -72,8 +73,13 @@ public class CodeCoverageScanner
 		// is ironed out
 		logger.println("Performing Code Coverage..."); //$NON-NLS-1$
 
-		String hostConnection = CodeCoverageUtils.escapeForScript(m_config.getHostConnection(), isShell);
-		logger.println("Host connection: " + hostConnection); //$NON-NLS-1$
+		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
+		
+		String connectionId = m_config.getConnectionId();
+		logger.println("Host connection ID: " + CodeCoverageUtils.escapeForScript(connectionId, isShell)); //$NON-NLS-1$
+		
+		String description = CodeCoverageUtils.escapeForScript(globalConfig.getHostConnection(connectionId).getDescription(), isShell);
+		logger.println("Host connection: " + description); //$NON-NLS-1$
 
 		String credentialsId = CodeCoverageUtils.escapeForScript(m_config.getCredentialsId(), isShell);
 		logger.println("Login credentials: " + credentialsId); //$NON-NLS-1$
