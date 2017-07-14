@@ -22,8 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import com.compuware.jenkins.build.CodeCoverageBuilder.CodeCoverageDescriptorImpl;
-import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
-import com.compuware.jenkins.common.configuration.HostConnection;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.FreeStyleBuild;
@@ -64,8 +62,8 @@ public class CodeCoverageBuilderTest
 		CodeCoverageBuilder builder = new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
 				expectedAnalysisPropertiesPath, expectedAnalysisProperties);
 
-		assertThat(String.format("Expected CodeCoverageBuilder.getHostConnection() to return %s", expectedConnectionId),
-				builder.getHostConnection().getConnectionId(), is(equalTo(expectedConnectionId)));
+		assertThat(String.format("Expected CodeCoverageBuilder.getConnectionId() to return %s", expectedConnectionId),
+				builder.getConnectionId(), is(equalTo(expectedConnectionId)));
 
 		assertThat(String.format("Expected CodeCoverageBuilder.getCredentialsId() to return %s", expectedCredentialsId),
 				builder.getCredentialsId(), is(equalTo(expectedCredentialsId)));
@@ -110,7 +108,6 @@ public class CodeCoverageBuilderTest
 
 	/**
 	 * Tests the results of an execution.
-	 * 
 	 * <p>
 	 * A project is created, configured and executed where the log is examined to verify results.
 	 */
@@ -155,7 +152,6 @@ public class CodeCoverageBuilderTest
 
 	/**
 	 * Perform a round trip test on the Code Coverage configuration builder.
-	 * 
 	 * <p>
 	 * A project is created, configured, submitted / saved, and reloaded where the original configuration is compared against
 	 * the reloaded configuration for equality.

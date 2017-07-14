@@ -17,7 +17,6 @@
 package com.compuware.jenkins.build;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -29,7 +28,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
-import com.compuware.jenkins.build.utils.Constants;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.configuration.HostConnection;
 import hudson.Extension;
@@ -81,48 +79,6 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		m_credentialsId = StringUtils.trimToEmpty(credentialsId);
 		m_analysisPropertiesPath = StringUtils.trimToEmpty(analysisPropertiesPath);
 		m_analysisProperties = StringUtils.trimToEmpty(analysisProperties);
-	}
-	
-	/**
-	 * Get a host connection for the current host connection unique identifier
-	 * 
-	 * @return a <code>HostConnection</code>; can be null
-	 */
-	public HostConnection getHostConnection()
-	{
-		HostConnection hostConnection = null;
-		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
-		HostConnection[] hostConnections = globalConfig.getHostConnections();
-
-		for (HostConnection connection : hostConnections)
-		{
-			if (m_connectionId != null && m_connectionId.matches(connection.getConnectionId()))
-			{
-				hostConnection = connection;
-			}
-		}
-	
-		return hostConnection;
-	}
-
-	/**
-	 * Gets the value of the host.
-	 * 
-	 * @return the <code>String</code> host
-	 */
-	public String getHost()
-	{
-		return StringUtils.substringBefore(m_hostConnection, Constants.COLON);
-	}
-
-	/**
-	 * Gets the value of the port.
-	 * 
-	 * @return the <code>String</code> port
-	 */
-	public String getPort()
-	{
-		return StringUtils.substringAfter(m_hostConnection, Constants.COLON);
 	}
 	
 	/**
