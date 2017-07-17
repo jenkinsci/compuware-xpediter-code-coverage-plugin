@@ -44,7 +44,8 @@ public class Constants
 	public static final String DOUBLE_QUOTE = "\"";
 	public static final String DOUBLE_QUOTE_ESCAPED = "\"\"";
 
-	public static final String TOPAZ_CLI_BAT = "TopazCLI.bat";
-	public static final String TOPAZ_CLI_SH = "TopazCLI.sh";
+	public static final String DEFAULT_ANALYSIS_PROPERTIES_FILE_NAME = "ccanalysis.properties";
+	public static final String CODE_COVERAGE_CLI_BAT = "CodeCoverageCLI.bat";
+	public static final String CODE_COVERAGE_CLI_SH = "CodeCoverageCLI.sh";
 	public static final String TOPAZ_CLI_WORKSPACE = "TopazCliWkspc";
 }

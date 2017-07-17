@@ -1,21 +1,22 @@
 <div>
-  <p>
-  This field allows to pass some configuration parameters to Code Coverage. Parameters defined here take precedence over the ones potentially defined in the specified codecoverage.properties file. It is even possible to specify all Code Coverage parameters here and leave the "Analysis Properties Path" input field empty.
-  </p>
-<pre style="border: solid #BBBBBB 1px; padding: 1em">
-# Relative path to source directory (required)
-cc.source=/src
+This field allows you to specify Code Coverage analysis properties.<p/>
+Analysis properties defined in this field will take precedence over any properties defined in the optionally specified Code Coverage analysis properties file above.<br/>
+It is possible to specify all Code Coverage properties in this field and leave the "Path to analysis properties" input field blank.<p/>
 
-# Code Coverage repository (required)
+<pre style="border: solid #BBBBBB 1px; padding: 1em">
+# Workspace-relative path(s) to source directories (Optional)
+cc.sources=/src
+
+# Code Coverage repository (Required)
 cc.repos=pfhjyg0.xv20.reposit
 
-# System (Optional)
+# Code Coverage System (Required)
 cc.system=
 
-# Test (Optional)
+# Code Coverage Test (Required)
 cc.test=
 
-# DDIO (Optional)
-cc.ddio.override=
+# Code Coverage DDIO Overrides (Optional)
+cc.ddio.overrides=
 </pre>
 </div>

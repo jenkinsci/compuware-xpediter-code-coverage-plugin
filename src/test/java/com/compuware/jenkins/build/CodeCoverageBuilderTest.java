@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import java.io.IOException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,12 +24,8 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.Stapler;
 import com.compuware.jenkins.build.CodeCoverageBuilder.CodeCoverageDescriptorImpl;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
-import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import hudson.model.Run;
-import hudson.model.TaskListener;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -42,18 +37,11 @@ public class CodeCoverageBuilderTest
 {
 	@Rule
 	public JenkinsRule j = new JenkinsRule();
-
-	// TODO (pfhjyg0) : to be handled later, when actually performing Code Coverage.
-	private TestScanner m_testScanner = null;
-
 	private CpwrGlobalConfiguration m_globalConfig = null;
 
 	@Before
 	public void setup()
 	{
-		// TODO (pfhjyg0) : to be handled later, when actually performing Code Coverage.
-		m_testScanner = new TestScanner(null);
-
 		try
 		{
 			JSONObject json = new JSONObject();
@@ -68,9 +56,8 @@ public class CodeCoverageBuilderTest
 			hostConnections.add(hostConnection);
 
 			json.put("hostConn", hostConnections);
-
-			json.put("topazCLILocationWindows", "/opt/Compuware/TopazCLI");
-			json.put("topazCLILocationLinux", "C:\\Program Files\\Compuware\\Topaz Workbench CLI");
+			json.put("topazCLILocationLinux", "/opt/Compuware/TopazCLI");
+			json.put("topazCLILocationWindows", "C:\\Program Files\\Compuware\\Topaz Workbench CLI");
 
 			m_globalConfig = CpwrGlobalConfiguration.get();
 			m_globalConfig.configure(Stapler.getCurrentRequest(), json);
@@ -127,12 +114,6 @@ public class CodeCoverageBuilderTest
 			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDisplayName() to not be empty.", displayName.isEmpty(),
 					is(false));
 
-			String defaultAnalysisPropertiesPath = descriptor.getDefaultAnalysisPropertiesPath();
-			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisPropertiesPath() to not be null.",
-					defaultAnalysisPropertiesPath, is(notNullValue()));
-			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisPropertiesPath() to not be empty.",
-					defaultAnalysisPropertiesPath.isEmpty(), is(false));
-
 			String defaultAnalysisProperties = descriptor.getDefaultAnalysisProperties();
 			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisProperties() to not be null.",
 					defaultAnalysisProperties, is(notNullValue()));
@@ -147,7 +128,6 @@ public class CodeCoverageBuilderTest
 
 	/**
 	 * Tests the results of an execution.
-	 * 
 	 * <p>
 	 * A project is created, configured and executed where the log is examined to verify results.
 	 */
@@ -169,7 +149,6 @@ public class CodeCoverageBuilderTest
 
 			// Could use JenkinsRule.java#assertLogContains(String, Run), but message on failure was odd regarding expected
 			// value.
-
 			String logFileOutput = JenkinsRule.getLog(build);
 
 			assertThat(String.format("Expected log to contain Host connection: \"%s\".", expectedConnectionId), logFileOutput,
@@ -193,7 +172,6 @@ public class CodeCoverageBuilderTest
 
 	/**
 	 * Perform a round trip test on the Code Coverage configuration builder.
-	 * 
 	 * <p>
 	 * A project is created, configured, submitted / saved, and reloaded where the original configuration is compared against
 	 * the reloaded configuration for equality.
@@ -230,27 +208,4 @@ public class CodeCoverageBuilderTest
 			fail(e.getMessage());
 		}
 	}
-
-	// TODO (pfhjyg0) : to be handled later, when actually performing Code Coverage.
-	private class TestScanner extends CodeCoverageScanner
-	{
-		/**
-		 * @param config
-		 */
-		public TestScanner(CodeCoverageBuilder config)
-		{
-			super(config);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.compuware.jenkins.build.CodeCoverageScanner#perform(hudson.model.Run, hudson.FilePath, hudson.Launcher, hudson.model.TaskListener)
-		 */
-		@Override
-		public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
-				throws IOException, InterruptedException
-		{
-			super.perform(run, workspace, launcher, listener);
-		}
-	};
 }

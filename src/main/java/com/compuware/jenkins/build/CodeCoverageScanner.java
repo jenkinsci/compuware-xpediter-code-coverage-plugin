@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
@@ -44,7 +45,7 @@ import hudson.util.ArgumentListBuilder;
 public class CodeCoverageScanner
 {
 	// Member Variables
-	private CodeCoverageBuilder m_config;
+	private CodeCoverageBuilder m_ccBuilder;
 
 	/**
 	 * Constructor.
@@ -54,22 +55,20 @@ public class CodeCoverageScanner
 	 */
 	public CodeCoverageScanner(CodeCoverageBuilder config)
 	{
-		m_config = config;
+		m_ccBuilder = config;
 	}
 
 	/**
-	 * Perform the Code Coveage scan.
+	 * Performs the Code Coverage scan.
 	 * 
 	 * @param run
 	 *            the current running Jenkins build
-	 * @param launcher
-	 *            the machine that the files will be checked out.
 	 * @param workspace
-	 *            a directory to check out the source code.
+	 *            the Jenkins job workspace directory
 	 * @param launcher
-	 *            a way to start a process
+	 *            the way to start a process
 	 * @param listener
-	 *            build listener
+	 *            the build listener
 	 * 
 	 * @throws IOException
 	 * @throws InterruptedException
@@ -80,62 +79,61 @@ public class CodeCoverageScanner
 		PrintStream logger = listener.getLogger();
 		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
 
-		ArgumentListBuilder args = new ArgumentListBuilder();
-		EnvVars env = run.getEnvironment(listener);
 		VirtualChannel vChannel = launcher.getChannel();
 		Properties remoteProperties = vChannel.call(new RemoteSystemProperties());
 		String remoteFileSeparator = remoteProperties.getProperty(Constants.FILE_SEPARATOR);
 		boolean isShell = launcher.isUnix();
-		String osFile = isShell ? Constants.TOPAZ_CLI_SH : Constants.TOPAZ_CLI_BAT;
+		String osFile = isShell ? Constants.CODE_COVERAGE_CLI_SH : Constants.CODE_COVERAGE_CLI_BAT;
 
 		String cliScriptFile = globalConfig.getTopazCLILocation(launcher) + remoteFileSeparator + osFile;
 		logger.println("cliScriptFile: " + cliScriptFile); //$NON-NLS-1$
 		String cliScriptFileRemote = new FilePath(vChannel, cliScriptFile).getRemote();
 		logger.println("cliScriptFileRemote: " + cliScriptFileRemote); //$NON-NLS-1$
-		HostConnection connection = globalConfig.getHostConnection(m_config.getConnectionId());
+		HostConnection connection = globalConfig.getHostConnection(m_ccBuilder.getConnectionId());
 		String host = CodeCoverageUtils.escapeForScript(connection.getHost(), isShell);
 		String port = CodeCoverageUtils.escapeForScript(connection.getPort(), isShell);
 		StandardUsernamePasswordCredentials credentials = globalConfig.getLoginInformation(run.getParent(),
-				m_config.getCredentialsId());
-		String codePage = CodeCoverageUtils.escapeForScript(connection.getCodePage(), isShell);
+				m_ccBuilder.getCredentialsId());
 		String userId = CodeCoverageUtils.escapeForScript(credentials.getUsername(), isShell);
 		String password = CodeCoverageUtils.escapeForScript(credentials.getPassword().getPlainText(), isShell);
+		String codePage = connection.getCodePage();
 		String topazCliWorkspace = workspace.getRemote() + remoteFileSeparator + Constants.TOPAZ_CLI_WORKSPACE;
 		logger.println("topazCliWorkspace: " + topazCliWorkspace); //$NON-NLS-1$
-		String analysisPropertiesPath = m_config.getAnalysisPropertiesPath();
-		String analysisPropertiesStr = m_config.getAnalysisProperties();
-		Properties analysisProperties = buildAnalysisProperties(analysisPropertiesPath, analysisPropertiesStr, logger);
+		String analysisPropertiesPath = m_ccBuilder.getAnalysisPropertiesPath();
+		String analysisPropertiesStr = m_ccBuilder.getAnalysisProperties();
+		Properties analysisProperties = buildAnalysisProperties(analysisPropertiesPath, analysisPropertiesStr, workspace,
+				logger);
 
+		ArgumentListBuilder args = new ArgumentListBuilder();
 		args.add(cliScriptFileRemote);
 		args.add(Constants.HOST_PARM, host);
 		args.add(Constants.PORT_PARM, port);
-		args.add(Constants.CODE_PAGE_PARM, codePage);
 		args.add(Constants.USERID_PARM, userId);
 		args.add(Constants.PASSWORD_PARM);
 		args.add(password, true);
+		args.add(Constants.CODE_PAGE_PARM, codePage);
 		args.add(Constants.TARGET_FOLDER_PARM, workspace.getRemote());
 		args.add(Constants.DATA_PARM, topazCliWorkspace);
 
 		logger.print("Analysis properties after parsing/merging: "); //$NON-NLS-1$
 		for (Map.Entry<?, ?> entry : analysisProperties.entrySet())
 		{
-			String key = prefixWithDash((String) entry.getKey());
-			String value = CodeCoverageUtils.escapeForScript((String) entry.getValue(), isShell);
-			logger.print(key + '=' + value + ' ');
-			args.add(key, value);
+			String value = (String) entry.getValue();
+			if (StringUtils.isNotBlank(value))
+			{
+				String key = prefixWithDash((String) entry.getKey());
+				value = CodeCoverageUtils.escapeForScript(value, isShell);
+				logger.print(key + '=' + value + ' ');
+				args.add(key, value);
+			}
 		}
 		logger.println();
-		
-		String connectionId = m_config.getConnectionId();
-		logger.println("Host connection ID: " + CodeCoverageUtils.escapeForScript(connectionId, isShell)); //$NON-NLS-1$
-		
-		String description = CodeCoverageUtils.escapeForScript(globalConfig.getHostConnection(connectionId).getDescription(), isShell);
-		logger.println("Host connection: " + description); //$NON-NLS-1$
 
+		EnvVars env = run.getEnvironment(listener);
 		FilePath workDir = new FilePath(vChannel, workspace.getRemote());
 		workDir.mkdirs();
 
-		int exitValue = launcher.launch().cmds(args).envs(env).stdout(listener.getLogger()).pwd(workDir).join();
+		int exitValue = launcher.launch().cmds(args).envs(env).stdout(logger).pwd(workDir).join();
 		logger.println("Call " + osFile + " exited with value = " + exitValue); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -148,22 +146,56 @@ public class CodeCoverageScanner
 	 *            the <code>String</code> path of a file containing analysis properties
 	 * @param analysisPropertiesStr
 	 *            the <code>String</code> containing analysis properties
+	 * @param workspace
+	 *            the workspace directory
 	 * @param logger
-	 *            the <code>PrintStream</code> to use for capting log statements
+	 *            the <code>PrintStream</code> to use for capturing log statements
 	 * 
 	 * @return the built <code>Properties</code>
 	 */
-	private Properties buildAnalysisProperties(String analysisPropertiesFilePath, String analysisPropertiesStr, PrintStream logger)
+	private Properties buildAnalysisProperties(String analysisPropertiesFilePath, String analysisPropertiesStr,
+			FilePath workspace, PrintStream logger)
 	{
 		Properties analysisProperties = new Properties();
 
 		// get properties from the file
-		if (StringUtils.isNotEmpty(analysisPropertiesFilePath))
+		Path filePath = null;
+
+		boolean filePathSpecified = StringUtils.isNotBlank(analysisPropertiesFilePath);
+		if (filePathSpecified)
+		{
+			// the path specified can be absolute or relative to the workspace
+			filePath = Paths.get(analysisPropertiesFilePath);
+			if (!filePath.isAbsolute())
+			{
+				filePath = Paths.get(workspace.getRemote(), analysisPropertiesFilePath);
+			}
+		}
+		else
+		{
+			// the user did not specify a file path, so use the default file path
+			filePath = Paths.get(workspace.getRemote(), Constants.DEFAULT_ANALYSIS_PROPERTIES_FILE_NAME);
+		}
+
+		byte[] bytes = null;
+		try
+		{
+			logger.println("Analysis properties file path: " + filePath.toAbsolutePath()); //$NON-NLS-1$
+			bytes = Files.readAllBytes(filePath);
+		}
+		catch (IOException e)
+		{
+			logger.println("An IOException occurred while obtaining analysis properties from the file: " + e.toString()); //$NON-NLS-1$
+			if (filePathSpecified)
+			{
+				e.printStackTrace(logger);
+			}
+		}
+
+		if (bytes != null)
 		{
 			try
 			{
-				logger.println("Analysis properties file path: " + analysisPropertiesFilePath); //$NON-NLS-1$
-				byte[] bytes = Files.readAllBytes(Paths.get(analysisPropertiesFilePath));
 				String filePropertiesStr = new String(bytes, Constants.UTF_8);
 				logger.println("Analysis properties string from file: " + filePropertiesStr); //$NON-NLS-1$
 				Properties fileProperties = convertStringToProperties(filePropertiesStr);
@@ -171,12 +203,13 @@ public class CodeCoverageScanner
 			}
 			catch (IOException e)
 			{
-				logger.print(e.getMessage());
+				logger.println("An IOException occurred while parsing analysis properties from the file: " + e.toString()); //$NON-NLS-1$
+				e.printStackTrace(logger);
 			}
 		}
 
 		// get properties from the string (these take precedence, so load them after the file properties)
-		if (StringUtils.isNotEmpty(analysisPropertiesStr))
+		if (StringUtils.isNotBlank(analysisPropertiesStr))
 		{
 			try
 			{
@@ -186,7 +219,8 @@ public class CodeCoverageScanner
 			}
 			catch (IOException e)
 			{
-				logger.print(e.getMessage());
+				logger.println("An IOException occurred while obtaining analysis properties from the UI: " + e.toString()); //$NON-NLS-1$
+				e.printStackTrace(logger);
 			}
 		}
 

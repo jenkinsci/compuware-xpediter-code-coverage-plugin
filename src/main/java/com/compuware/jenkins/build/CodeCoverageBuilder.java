@@ -183,16 +183,6 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		}
 
 		/**
-		 * Get the default value for 'Analysis properties path'
-		 * 
-		 * @return the default value for 'Analysis properties path'
-		 */
-		public String getDefaultAnalysisPropertiesPath()
-		{
-			return Messages.defaultAnalysisPropertiesPath();
-		}
-
-		/**
 		 * Get the default value for 'Analysis properties'
 		 * 
 		 * @return the default value for 'Analysis properties'
