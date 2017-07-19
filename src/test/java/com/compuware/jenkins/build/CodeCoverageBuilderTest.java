@@ -22,6 +22,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.Stapler;
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
+import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.compuware.jenkins.build.CodeCoverageBuilder.CodeCoverageDescriptorImpl;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import hudson.model.FreeStyleBuild;
@@ -35,38 +38,52 @@ import net.sf.json.JSONObject;
 @SuppressWarnings("nls")
 public class CodeCoverageBuilderTest
 {
+	// Constants
+	private static final String CONNECTION_ID = "12345";
+	private static final String CREDENTIALS_ID = "67890";
+	private static final String ANALYSIS_PROPERTIES_FILEPATH = "\\a\\path\\to\\analysis\\properties\\ccanalysis.properties";
+	private static final String ANALYSIS_PROEPRTIES_STRING = "cc.sources=\ncc.repos=\ncc.system=\ncc.test=\ncc.ddio.overrides=";
+	
+	private static final String HOST = "cw01";
+	private static final String PORT = "30947";
+	private static final String USER_ID = "xdevreg";
+	private static final String PASSWORD = "********";
+
+	// Member Variables
 	@Rule
-	public JenkinsRule j = new JenkinsRule();
-	private CpwrGlobalConfiguration m_globalConfig = null;
+	public JenkinsRule m_jenkinsRule = new JenkinsRule();
+	private CpwrGlobalConfiguration m_globalConfig;
 
 	@Before
 	public void setup()
 	{
 		try
 		{
-			JSONObject json = new JSONObject();
-
 			JSONObject hostConnection = new JSONObject();
 			hostConnection.put("description", "TestConnection");
-			hostConnection.put("hostPort", "cw01:30947");
+			hostConnection.put("hostPort", HOST + ':' + PORT);
 			hostConnection.put("codePage", "1047");
-			hostConnection.put("connectionId", "1243");
+			hostConnection.put("connectionId", CONNECTION_ID);
 
 			JSONArray hostConnections = new JSONArray();
 			hostConnections.add(hostConnection);
 
+			JSONObject json = new JSONObject();
 			json.put("hostConn", hostConnections);
 			json.put("topazCLILocationLinux", "/opt/Compuware/TopazCLI");
 			json.put("topazCLILocationWindows", "C:\\Program Files\\Compuware\\Topaz Workbench CLI");
 
 			m_globalConfig = CpwrGlobalConfiguration.get();
 			m_globalConfig.configure(Stapler.getCurrentRequest(), json);
+
+			SystemCredentialsProvider.getInstance().getCredentials()
+					.add(new UsernamePasswordCredentialsImpl(CredentialsScope.USER, CREDENTIALS_ID, null, USER_ID, PASSWORD));
+			SystemCredentialsProvider.getInstance().save();
 		}
 		catch (Exception e)
 		{
-			// Add the print of the stacktrace because the exception message is not enough
-			// to troubleshoot the root issue. For example, if the exception is constructed
-			// without a message, you get no information from executing fail().
+			// Add the print of the stacktrace because the exception message is not enough to troubleshoot the root issue. For
+			// example, if the exception is constructed without a message, you get no information from executing fail().
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -78,28 +95,23 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void constructBuilderTest()
 	{
-		String expectedConnectionId = "1243";
-		String expectedCredentialsId = "45";
-		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
-		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
+		CodeCoverageBuilder builder = new CodeCoverageBuilder(CONNECTION_ID, CREDENTIALS_ID, ANALYSIS_PROPERTIES_FILEPATH,
+				ANALYSIS_PROEPRTIES_STRING);
 
-		CodeCoverageBuilder builder = new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
-				expectedAnalysisPropertiesPath, expectedAnalysisProperties);
+		assertThat(String.format("Expected CodeCoverageBuilder.getConnectionId() to return %s", CONNECTION_ID),
+				builder.getConnectionId(), is(equalTo(CONNECTION_ID)));
 
-		assertThat(String.format("Expected CodeCoverageBuilder.getConnectionId() to return %s", expectedConnectionId),
-				builder.getConnectionId(), is(equalTo(expectedConnectionId)));
-
-		assertThat(String.format("Expected CodeCoverageBuilder.getCredentialsId() to return %s", expectedCredentialsId),
-				builder.getCredentialsId(), is(equalTo(expectedCredentialsId)));
+		assertThat(String.format("Expected CodeCoverageBuilder.getCredentialsId() to return %s", CREDENTIALS_ID),
+				builder.getCredentialsId(), is(equalTo(CREDENTIALS_ID)));
 
 		assertThat(
 				String.format("Expected CodeCoverageBuilder.getAnalysisPropertiesPath() to return %s",
-						expectedAnalysisPropertiesPath),
-				builder.getAnalysisPropertiesPath(), is(equalTo(expectedAnalysisPropertiesPath)));
+						ANALYSIS_PROPERTIES_FILEPATH),
+				builder.getAnalysisPropertiesPath(), is(equalTo(ANALYSIS_PROPERTIES_FILEPATH)));
 
 		assertThat(
-				String.format("Expected CodeCoverageBuilder.getAnalysisProperties() to return %s", expectedAnalysisProperties),
-				builder.getAnalysisProperties(), is(equalTo(expectedAnalysisProperties)));
+				String.format("Expected CodeCoverageBuilder.getAnalysisProperties() to return %s", ANALYSIS_PROEPRTIES_STRING),
+				builder.getAnalysisProperties(), is(equalTo(ANALYSIS_PROEPRTIES_STRING)));
 	}
 
 	/**
@@ -126,9 +138,8 @@ public class CodeCoverageBuilderTest
 		}
 		catch (Exception e)
 		{
-			// Add the print of the stacktrace because the exception message is not enough
-			// to troubleshoot the root issue. For example, if the exception is constructed
-			// without a message, you get no information from executing fail().
+			// Add the print of the stacktrace because the exception message is not enough to troubleshoot the root issue. For
+			// example, if the exception is constructed without a message, you get no information from executing fail().
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -142,41 +153,43 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void executionTest()
 	{
-		String expectedConnectionId = "1243";
-		String expectedCredentialsId = "5432";
-		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
-		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
-
 		try
 		{
-			FreeStyleProject project = j.createFreeStyleProject("TestProject");
-			project.getBuildersList().add(new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
-					expectedAnalysisPropertiesPath, expectedAnalysisProperties));
+			FreeStyleProject project = m_jenkinsRule.createFreeStyleProject("TestProject");
+			project.getBuildersList().add(new CodeCoverageBuilder(CONNECTION_ID, CREDENTIALS_ID, ANALYSIS_PROPERTIES_FILEPATH,
+					ANALYSIS_PROEPRTIES_STRING));
 
-			FreeStyleBuild build = j.buildAndAssertSuccess(project);
+			// don't expect the build to succeed since no CLI exists
+			if (project.scheduleBuild(null))
+			{
+				while (project.getLastCompletedBuild() == null)
+				{
+					// wait for the build to complete before obtaining the log
+					continue;
+				}
 
-			// Could use JenkinsRule.java#assertLogContains(String, Run), but message on failure was odd regarding expected
-			// value.
-			String logFileOutput = JenkinsRule.getLog(build);
+				FreeStyleBuild build = project.getLastCompletedBuild();
+				String logFileOutput = JenkinsRule.getLog(build);
+				
+				String expectedConnectionStr = String.format("-host \"%s\" -port \"%s\"", HOST, PORT);
+				assertThat("Expected log to contain Host connection: " + expectedConnectionStr + '.', logFileOutput,
+						containsString(expectedConnectionStr));
 
-			assertThat(String.format("Expected log to contain Host connection: \"%s\".", expectedConnectionId), logFileOutput,
-					containsString(expectedConnectionId));
+				String expectedCredentialsStr = String.format("-id \"%s\" -pass %s", USER_ID, PASSWORD);
+				assertThat("Expected log to contain Login credentials: " + expectedCredentialsStr + '.', logFileOutput,
+						containsString(expectedCredentialsStr));
 
-			assertThat(String.format("Expected log to contain Login credentials: \"%s\".", expectedCredentialsId),
-					logFileOutput, containsString(expectedCredentialsId));
+				assertThat(String.format("Expected log to contain Analysis properties path: \"%s\".",
+						ANALYSIS_PROPERTIES_FILEPATH), logFileOutput, containsString(ANALYSIS_PROPERTIES_FILEPATH));
 
-			assertThat(
-					String.format("Expected log to contain Analysis properties path: \"%s\".", expectedAnalysisPropertiesPath),
-					logFileOutput, containsString(expectedAnalysisPropertiesPath));
-
-			assertThat(String.format("Expected log to contain Analysis properties: \"%s\".", expectedAnalysisProperties),
-					logFileOutput, containsString(expectedAnalysisProperties));
+				assertThat(String.format("Expected log to contain Analysis properties: \"%s\".", ANALYSIS_PROEPRTIES_STRING),
+						logFileOutput, containsString(ANALYSIS_PROEPRTIES_STRING));
+			}
 		}
 		catch (Exception e)
 		{
-			// Add the print of the stacktrace because the exception message is not enough
-			// to troubleshoot the root issue. For example, if the exception is constructed
-			// without a message, you get no information from executing fail().
+			// Add the print of the stacktrace because the exception message is not enough to troubleshoot the root issue. For
+			// example, if the exception is constructed without a message, you get no information from executing fail().
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -191,35 +204,29 @@ public class CodeCoverageBuilderTest
 	@Test
 	public void roundTripTest()
 	{
-		String expectedConnectionId = "1243";
-		String expectedCredentialsId = "456";
-		String expectedAnalysisPropertiesPath = "/a/path/to/analysis/properties/ccanalysis.properties";
-		String expectedAnalysisProperties = "cc.source=/src\ncc.repos=pfhjyg0.xv20.reposit\ncc.system=\ncc.test=\ncc.ddio.override=";
-
 		try
 		{
-			FreeStyleProject project = j.createFreeStyleProject("TestProject");
-			CodeCoverageBuilder before = new CodeCoverageBuilder(expectedConnectionId, expectedCredentialsId,
-					expectedAnalysisPropertiesPath, expectedAnalysisProperties);
+			FreeStyleProject project = m_jenkinsRule.createFreeStyleProject("TestProject");
+			CodeCoverageBuilder before = new CodeCoverageBuilder(CONNECTION_ID, CREDENTIALS_ID, ANALYSIS_PROPERTIES_FILEPATH,
+					ANALYSIS_PROEPRTIES_STRING);
 			project.getBuildersList().add(before);
 
 			// workaround for eclipse compiler Ambiguous method call
 			project.save();
-			j.jenkins.reload();
+			m_jenkinsRule.jenkins.reload();
 
-			FreeStyleProject reloaded = j.jenkins.getItemByFullName(project.getFullName(), FreeStyleProject.class);
+			FreeStyleProject reloaded = m_jenkinsRule.jenkins.getItemByFullName(project.getFullName(), FreeStyleProject.class);
 			assertNotNull(reloaded);
 
 			CodeCoverageBuilder after = reloaded.getBuildersList().get(CodeCoverageBuilder.class);
 			assertNotNull(after);
 
-			j.assertEqualBeans(before, after, "connectionId,credentialsId,analysisPropertiesPath,analysisProperties");
+			m_jenkinsRule.assertEqualBeans(before, after, "connectionId,credentialsId,analysisPropertiesPath,analysisProperties");
 		}
 		catch (Exception e)
 		{
-			// Add the print of the stacktrace because the exception message is not enough
-			// to troubleshoot the root issue. For example, if the exception is constructed
-			// without a message, you get no information from executing fail().
+			// Add the print of the stacktrace because the exception message is not enough to troubleshoot the root issue. For
+			// example, if the exception is constructed without a message, you get no information from executing fail().
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
