@@ -77,6 +77,10 @@ public class CodeCoverageBuilderTest
 		}
 		catch (Exception e)
 		{
+			// Add the print of the stacktrace because the exception message is not enough
+			// to troubleshoot the root issue. For example, if the exception is constructed
+			// without a message, you get no information from executing fail().
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
@@ -141,6 +145,10 @@ public class CodeCoverageBuilderTest
 		}
 		catch (Exception e)
 		{
+			// Add the print of the stacktrace because the exception message is not enough
+			// to troubleshoot the root issue. For example, if the exception is constructed
+			// without a message, you get no information from executing fail().
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
@@ -187,6 +195,10 @@ public class CodeCoverageBuilderTest
 		}
 		catch (Exception e)
 		{
+			// Add the print of the stacktrace because the exception message is not enough
+			// to troubleshoot the root issue. For example, if the exception is constructed
+			// without a message, you get no information from executing fail().
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
@@ -227,6 +239,10 @@ public class CodeCoverageBuilderTest
 		}
 		catch (Exception e)
 		{
+			// Add the print of the stacktrace because the exception message is not enough
+			// to troubleshoot the root issue. For example, if the exception is constructed
+			// without a message, you get no information from executing fail().
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
