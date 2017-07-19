@@ -30,7 +30,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * Code Coverage Builder tests.
+ * CodeCoverageBuilder unit tests.
  */
 @SuppressWarnings("nls")
 public class CodeCoverageBuilderTest

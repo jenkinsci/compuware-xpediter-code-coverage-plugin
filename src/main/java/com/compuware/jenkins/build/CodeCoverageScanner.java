@@ -31,6 +31,7 @@ import com.compuware.jenkins.build.utils.CodeCoverageUtils;
 import com.compuware.jenkins.build.utils.Constants;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.configuration.HostConnection;
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -134,7 +135,14 @@ public class CodeCoverageScanner
 		workDir.mkdirs();
 
 		int exitValue = launcher.launch().cmds(args).envs(env).stdout(logger).pwd(workDir).join();
-		logger.println("Call " + osFile + " exited with value = " + exitValue); //$NON-NLS-1$ //$NON-NLS-2$
+		if (exitValue != 0)
+		{
+			throw new AbortException("Call " + osFile + " exited with value = " + exitValue); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		else
+		{
+			logger.println("Call " + osFile + " exited with value = " + exitValue); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 
 	/**
@@ -153,7 +161,7 @@ public class CodeCoverageScanner
 	 * 
 	 * @return the built <code>Properties</code>
 	 */
-	private Properties buildAnalysisProperties(String analysisPropertiesFilePath, String analysisPropertiesStr,
+	protected Properties buildAnalysisProperties(String analysisPropertiesFilePath, String analysisPropertiesStr,
 			FilePath workspace, PrintStream logger)
 	{
 		Properties analysisProperties = new Properties();
@@ -238,7 +246,7 @@ public class CodeCoverageScanner
 	 * @throws IOException
 	 *             if an error occurred during conversion
 	 */
-	private Properties convertStringToProperties(String propertiesString) throws IOException
+	protected Properties convertStringToProperties(String propertiesString) throws IOException
 	{
 		Properties properties = new Properties();
 
@@ -258,7 +266,7 @@ public class CodeCoverageScanner
 	 * 
 	 * @return the prefixed <code>String</code> property
 	 */
-	private String prefixWithDash(String property)
+	protected String prefixWithDash(String property)
 	{
 		String prefixedProperty = property;
 
