@@ -19,7 +19,6 @@ package com.compuware.jenkins.build;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.ServletException;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -199,11 +198,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            unique identifier for the host connection passed from the config.jelly "connectionId" field
 		 * 
 		 * @return validation message
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
-		public FormValidation doCheckConnectionId(@QueryParameter String connectionId) throws IOException, ServletException
+		public FormValidation doCheckConnectionId(@QueryParameter String connectionId)
 		{
 			String tempValue = StringUtils.trimToEmpty(connectionId);
 			if (tempValue.isEmpty() == true)
@@ -221,11 +217,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            login credentials passed from the config.jelly "credentialsId" field
 		 * 
 		 * @return validation message
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
-		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId) throws IOException, ServletException
+		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId)
 		{
 			String tempValue = StringUtils.trimToEmpty(credentialsId);
 			if (tempValue.isEmpty() == true)
@@ -243,14 +236,13 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            filter for host connections
 		 * @param connectionId
 		 *            an existing host connection identifier; can be null
+		 * @param project
+		 *            the Jenkins project
 		 * 
 		 * @return host connection selections
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
 		public ListBoxModel doFillConnectionIdItems(@AncestorInPath Jenkins context, @QueryParameter String connectionId,
-				@AncestorInPath Item project) throws IOException, ServletException
+				@AncestorInPath Item project)
 		{
 			CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
 			HostConnection[] hostConnections = globalConfig.getHostConnections();
@@ -266,7 +258,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 					isSelected = connectionId.matches(connection.getConnectionId());
 				}
 
-				model.add(new Option(connection.getDescription() + " [" + connection.getHostPort() + ']', connection.getConnectionId(), isSelected)); //$NON-NLS-1$
+				model.add(new Option(connection.getDescription() + " [" + connection.getHostPort() + ']', //$NON-NLS-1$
+						connection.getConnectionId(), isSelected));
 			}
 
 			return model;
@@ -279,14 +272,13 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            filter for login credentials
 		 * @param credentialsId
 		 *            existing login credentials; can be null
+		 * @param project
+		 *            the Jenkins project
 		 * 
 		 * @return login credentials selection
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
-				@AncestorInPath Item project) throws IOException, ServletException
+				@AncestorInPath Item project)
 		{
 			List<StandardUsernamePasswordCredentials> creds = CredentialsProvider.lookupCredentials(
 					StandardUsernamePasswordCredentials.class, project, ACL.SYSTEM,

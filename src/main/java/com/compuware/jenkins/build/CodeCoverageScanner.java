@@ -72,7 +72,9 @@ public class CodeCoverageScanner
 	 *            the build listener
 	 * 
 	 * @throws IOException
+	 *             if an error occurs performing the scan
 	 * @throws InterruptedException
+	 *             if the user cancels the scan
 	 */
 	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
 			throws IOException, InterruptedException
