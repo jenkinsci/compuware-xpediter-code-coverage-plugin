@@ -52,6 +52,8 @@ public class CodeCoverageBuilderTest
 	
 	private static final String HOST = "cw01";
 	private static final String PORT = "30947";
+	private static final String CODE_PAGE = "1047";
+	private static final String TIMEOUT = "123";
 	private static final String USER_ID = "xdevreg";
 	private static final String PASSWORD = "********";
 
@@ -68,7 +70,8 @@ public class CodeCoverageBuilderTest
 			JSONObject hostConnection = new JSONObject();
 			hostConnection.put("description", "TestConnection");
 			hostConnection.put("hostPort", HOST + ':' + PORT);
-			hostConnection.put("codePage", "1047");
+			hostConnection.put("codePage", CODE_PAGE);
+			hostConnection.put("timeout", TIMEOUT);
 			hostConnection.put("connectionId", CONNECTION_ID);
 
 			JSONArray hostConnections = new JSONArray();
@@ -180,6 +183,14 @@ public class CodeCoverageBuilderTest
 				String expectedConnectionStr = String.format("-host \"%s\" -port \"%s\"", HOST, PORT);
 				assertThat("Expected log to contain Host connection: " + expectedConnectionStr + '.', logFileOutput,
 						containsString(expectedConnectionStr));
+
+				String expectedCodePageStr = String.format("-code %s", CODE_PAGE);
+				assertThat("Expected log to contain Host code page: " + expectedCodePageStr + '.', logFileOutput,
+						containsString(expectedCodePageStr));
+
+				String expectedTimeoutStr = String.format("-timeout \"%s\"", TIMEOUT);
+				assertThat("Expected log to contain Host timeout: " + expectedTimeoutStr + '.', logFileOutput,
+						containsString(expectedTimeoutStr));
 
 				String expectedCredentialsStr = String.format("-id \"%s\" -pass %s", USER_ID, PASSWORD);
 				assertThat("Expected log to contain Login credentials: " + expectedCredentialsStr + '.', logFileOutput,

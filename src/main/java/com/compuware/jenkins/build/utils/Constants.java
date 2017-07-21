@@ -32,8 +32,9 @@ public class Constants
 	public static final String HOST_PARM = "-host";
 	public static final String PASSWORD_PARM = "-pass";
 	public static final String PORT_PARM = "-port";
-	public static final String USERID_PARM = "-id";
 	public static final String TARGET_FOLDER_PARM = "-targetFolder";
+	public static final String TIMEOUT_PARM = "-timeout";
+	public static final String USERID_PARM = "-id";
 	
 	public static final String COLON = ":";
 	public static final String COMMA = ",";
