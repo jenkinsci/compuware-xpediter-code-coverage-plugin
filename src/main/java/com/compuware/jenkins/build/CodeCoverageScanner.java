@@ -112,7 +112,7 @@ public class CodeCoverageScanner
 		args.add(Constants.HOST_PARM, host);
 		args.add(Constants.PORT_PARM, port);
 		args.add(Constants.USERID_PARM, userId);
-		args.add(Constants.PASSWORD_PARM);
+		args.add(Constants.PW_PARM);
 		args.add(password, true);
 		args.add(Constants.CODE_PAGE_PARM, codePage);
 		args.add(Constants.TARGET_FOLDER_PARM, workspace.getRemote());
@@ -261,7 +261,7 @@ public class CodeCoverageScanner
 	/**
 	 * Prefixes the given property with a dash (-).
 	 * <p>
-	 * If the property is already prefixed with a dash, the propery is returned.
+	 * If the property is already prefixed with a dash, the property is returned.
 	 * 
 	 * @param property
 	 *            the <code>String</code> property

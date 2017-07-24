@@ -169,28 +169,28 @@ public class CodeCoverageScannerTest
 		assertThat("Expected property String with dashes, with newlines to be converted to Properties correctly.",
 				properties2.entrySet(), is(expectedPropertiesWithDashes.entrySet()));
 
-		// test property String without dashes, with carraige returns
+		// test property String without dashes, with carriage returns
 		String propertyStr3 = "cc.sources=/testSrc,C:/Users/\rcc.repos=XDEVREG.CC.REPOSIT,XDEVREG.CC.REPOSIT2\rcc.system=ccSystem\rcc.test=ccTest\rcc.ddio.overrides=XDEVREG.CC.DDIO,XDEVREG.CC.DDIO2";
 		Properties properties3 = m_ccScanner.convertStringToProperties(propertyStr3);
 		assertThat(
 				"Expected property String without dashes, with carraige returns to be converted to Properties correctly.",
 				properties3.entrySet(), is(expectedPropertiesWithoutDashes.entrySet()));
 
-		// test property String with dashes, with carraige returns
+		// test property String with dashes, with carriage returns
 		String propertyStr4 = "-cc.sources=/testSrc,C:/Users/\r-cc.repos=XDEVREG.CC.REPOSIT,XDEVREG.CC.REPOSIT2\r-cc.system=ccSystem\r-cc.test=ccTest\r-cc.ddio.overrides=XDEVREG.CC.DDIO,XDEVREG.CC.DDIO2";
 		Properties properties4 = m_ccScanner.convertStringToProperties(propertyStr4);
 		assertThat(
 				"Expected property String with dashes, with carraige returns to be converted to Properties correctly.",
 				properties4.entrySet(), is(expectedPropertiesWithDashes.entrySet()));
 
-		// test property String without dashes, with newline/carraige returns
+		// test property String without dashes, with newline/carriage returns
 		String propertyStr5 = "cc.sources=/testSrc,C:/Users/\n\rcc.repos=XDEVREG.CC.REPOSIT,XDEVREG.CC.REPOSIT2\n\rcc.system=ccSystem\n\rcc.test=ccTest\n\rcc.ddio.overrides=XDEVREG.CC.DDIO,XDEVREG.CC.DDIO2";
 		Properties properties5 = m_ccScanner.convertStringToProperties(propertyStr5);
 		assertThat(
 				"Expected property String without dashes, with newline/carraige returns to be converted to Properties correctly.",
 				properties5.entrySet(), is(expectedPropertiesWithoutDashes.entrySet()));
 
-		// test property String with dashes, with newline/carraige returns
+		// test property String with dashes, with newline/carriage returns
 		String propertyStr6 = "-cc.sources=/testSrc,C:/Users/\n\r-cc.repos=XDEVREG.CC.REPOSIT,XDEVREG.CC.REPOSIT2\n\r-cc.system=ccSystem\n\r-cc.test=ccTest\n\r-cc.ddio.overrides=XDEVREG.CC.DDIO,XDEVREG.CC.DDIO2";
 		Properties properties6 = m_ccScanner.convertStringToProperties(propertyStr6);
 		assertThat(

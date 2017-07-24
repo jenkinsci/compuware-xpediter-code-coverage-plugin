@@ -30,7 +30,7 @@ public class Constants
 	public static final String CODE_PAGE_PARM = "-code";
 	public static final String DATA_PARM = "-data";
 	public static final String HOST_PARM = "-host";
-	public static final String PASSWORD_PARM = "-pass";
+	public static final String PW_PARM = "-pass";
 	public static final String PORT_PARM = "-port";
 	public static final String USERID_PARM = "-id";
 	public static final String TARGET_FOLDER_PARM = "-targetFolder";

@@ -63,13 +63,10 @@ public class CodeCoverageUtils
 	{
 		String output = null;
 
-		if (input != null)
+		if (input != null && !isShell)
 		{
 			// shell scripts don't need args wrapped in quotes
-			if (isShell == false)
-			{
-				output = String.format("\"%s\"", input); //$NON-NLS-1$
-			}
+			output = String.format("\"%s\"", input); //$NON-NLS-1$
 		}
 
 		return output;

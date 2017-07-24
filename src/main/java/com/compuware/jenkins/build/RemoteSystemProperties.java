@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  * 
- * Copyright (c) 2016 Compuware Corporation
+ * Copyright (c) 2016, 2017 Compuware Corporation
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
  * and associated documentation files (the "Software"), to deal in the Software without restriction, 
@@ -38,7 +38,8 @@ public class RemoteSystemProperties implements Callable<Properties, RuntimeExcep
 	 * @see org.jenkinsci.remoting.RoleSensitive#checkRoles(org.jenkinsci.remoting.RoleChecker)
 	 */
 	@Override
-	public void checkRoles(RoleChecker checker) throws SecurityException
+	public void checkRoles(RoleChecker checker)
 	{
+		// Implementation required by interface, but not using
 	}
 }

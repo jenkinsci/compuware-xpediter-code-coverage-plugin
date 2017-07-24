@@ -202,7 +202,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		public FormValidation doCheckConnectionId(@QueryParameter String connectionId)
 		{
 			String tempValue = StringUtils.trimToEmpty(connectionId);
-			if (tempValue.isEmpty() == true)
+			if (tempValue.isEmpty())
 			{
 				return FormValidation.error(Messages.checkHostConnectionError());
 			}
@@ -221,7 +221,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId)
 		{
 			String tempValue = StringUtils.trimToEmpty(credentialsId);
-			if (tempValue.isEmpty() == true)
+			if (tempValue.isEmpty())
 			{
 				return FormValidation.error(Messages.checkLoginCredentialsError());
 			}
