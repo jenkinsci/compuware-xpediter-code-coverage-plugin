@@ -25,21 +25,27 @@ package com.compuware.jenkins.build.utils;
 public class Constants
 {
 	public static final String FILE_SEPARATOR = "file.separator";
+	public static final String UTF_8 = "UTF-8";
 
-	public static final String HOST_CONNECTION_PARM = "-hostConnection";
-	public static final String CREDENTIALS_ID_PARM = "-credentialsId";
-	public static final String ANALYSIS_PROPERTIES_PATH_PARM = "-analysisPropertiesPath";
-	public static final String ANALYSIS_PROPERTIES_PARM = "-analysisProperties";
+	public static final String CODE_PAGE_PARM = "-code";
+	public static final String DATA_PARM = "-data";
+	public static final String HOST_PARM = "-host";
+	public static final String PW_PARM = "-pass";
+	public static final String PORT_PARM = "-port";
+	public static final String USERID_PARM = "-id";
+	public static final String TARGET_FOLDER_PARM = "-targetFolder";
 	
 	public static final String COLON = ":";
 	public static final String COMMA = ",";
+	public static final String DASH = "-";
 	public static final String LINE_RETURN = "\n";
 	public static final String SPACE = " ";
 
 	public static final String DOUBLE_QUOTE = "\"";
 	public static final String DOUBLE_QUOTE_ESCAPED = "\"\"";
 
-	public static final String TOPAZ_CLI_BAT = "TopazCLI.bat";
-	public static final String TOPAZ_CLI_SH = "TopazCLI.sh";
+	public static final String DEFAULT_ANALYSIS_PROPERTIES_FILE_NAME = "ccanalysis.properties";
+	public static final String CODE_COVERAGE_CLI_BAT = "CodeCoverageCLI.bat";
+	public static final String CODE_COVERAGE_CLI_SH = "CodeCoverageCLI.sh";
 	public static final String TOPAZ_CLI_WORKSPACE = "TopazCliWkspc";
 }

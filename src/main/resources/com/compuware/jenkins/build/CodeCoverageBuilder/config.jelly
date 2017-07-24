@@ -10,7 +10,7 @@
       </f:entry>
  
       <f:entry title="${%analysisPropertiesPath}" field="analysisPropertiesPath">
-            <f:textbox default="${descriptor.defaultAnalysisPropertiesPath}"/>
+            <f:textbox default=""/>
       </f:entry>
       
       <f:entry title="${%analysisProperties}" field="analysisProperties">

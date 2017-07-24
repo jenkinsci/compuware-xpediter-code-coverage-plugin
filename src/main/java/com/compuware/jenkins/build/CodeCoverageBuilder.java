@@ -19,7 +19,6 @@ package com.compuware.jenkins.build;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.ServletException;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -62,13 +61,18 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	/**
 	 * Constructor.
 	 * 
-	 * @param connectionId a unique host connection identifier
-	 * @param credentialsId unique id of the selected credential
-	 * @param analysisPropertiesPath the path of Code Coverage analysis properties file
-	 * @param analysisProperties the Code Coverage analysis properties
+	 * @param connectionId
+				  a unique host connection identifier
+	 * @param credentialsId
+	 *            unique id of the selected credential
+	 * @param analysisPropertiesPath
+	 *            the path of Code Coverage analysis properties file
+	 * @param analysisProperties
+	 *            the Code Coverage analysis properties
 	 */
 	@DataBoundConstructor
-	public CodeCoverageBuilder(String connectionId, String credentialsId, String analysisPropertiesPath, String analysisProperties)
+	public CodeCoverageBuilder(String connectionId, String credentialsId, String analysisPropertiesPath,
+			String analysisProperties)
 	{
 		m_connectionId = StringUtils.trimToEmpty(connectionId);
 		m_credentialsId = StringUtils.trimToEmpty(credentialsId);
@@ -123,7 +127,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
     @Override
     public CodeCoverageDescriptorImpl getDescriptor() 
     {
-        return (CodeCoverageDescriptorImpl)super.getDescriptor();
+		return (CodeCoverageDescriptorImpl) super.getDescriptor();
     }
 
 	/**
@@ -134,6 +138,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	public static final class CodeCoverageDescriptorImpl extends BuildStepDescriptor<Builder>
 	{
 		/**
+		 * Constructor.
+		 * <p>
 		 * In order to load the persisted global configuration, you have to call load() in the constructor.
 		 */
 		public CodeCoverageDescriptorImpl()
@@ -146,6 +152,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 * (non-Javadoc)
 		 * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
 		 */
+		@Override
 		@SuppressWarnings("rawtypes")
 		public boolean isApplicable(Class<? extends AbstractProject> aClass)
 		{
@@ -157,6 +164,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 * (non-Javadoc)
 		 * @see hudson.model.Descriptor#getDisplayName()
 		 */
+		@Override
 		public String getDisplayName()
 		{
 			return Messages.descriptorDisplayName();
@@ -171,16 +179,6 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		{
 			save();
 			return super.configure(req, formData);
-		}
-
-		/**
-		 * Get the default value for 'Analysis properties path'
-		 * 
-		 * @return the default value for 'Analysis properties path'
-		 */
-		public String getDefaultAnalysisPropertiesPath()
-		{
-			return Messages.defaultAnalysisPropertiesPath();
 		}
 
 		/**
@@ -200,14 +198,11 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            unique identifier for the host connection passed from the config.jelly "connectionId" field
 		 * 
 		 * @return validation message
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
-		public FormValidation doCheckConnectionId(@QueryParameter String connectionId) throws IOException, ServletException
+		public FormValidation doCheckConnectionId(@QueryParameter String connectionId)
 		{
 			String tempValue = StringUtils.trimToEmpty(connectionId);
-			if (tempValue.isEmpty() == true)
+			if (tempValue.isEmpty())
 			{
 				return FormValidation.error(Messages.checkHostConnectionError());
 			}
@@ -222,14 +217,11 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            login credentials passed from the config.jelly "credentialsId" field
 		 * 
 		 * @return validation message
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
-		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId) throws IOException, ServletException
+		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId)
 		{
 			String tempValue = StringUtils.trimToEmpty(credentialsId);
-			if (tempValue.isEmpty() == true)
+			if (tempValue.isEmpty())
 			{
 				return FormValidation.error(Messages.checkLoginCredentialsError());
 			}
@@ -244,14 +236,13 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            filter for host connections
 		 * @param connectionId
 		 *            an existing host connection identifier; can be null
+		 * @param project
+		 *            the Jenkins project
 		 * 
 		 * @return host connection selections
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
 		public ListBoxModel doFillConnectionIdItems(@AncestorInPath Jenkins context, @QueryParameter String connectionId,
-				@AncestorInPath Item project) throws IOException, ServletException
+				@AncestorInPath Item project)
 		{
 			CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
 			HostConnection[] hostConnections = globalConfig.getHostConnections();
@@ -267,7 +258,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 					isSelected = connectionId.matches(connection.getConnectionId());
 				}
 
-				model.add(new Option(connection.getDescription() + " [" + connection.getHostPort() + ']', connection.getConnectionId(), isSelected)); //$NON-NLS-1$
+				model.add(new Option(connection.getDescription() + " [" + connection.getHostPort() + ']', //$NON-NLS-1$
+						connection.getConnectionId(), isSelected));
 			}
 
 			return model;
@@ -280,14 +272,13 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 *            filter for login credentials
 		 * @param credentialsId
 		 *            existing login credentials; can be null
+		 * @param project
+		 *            the Jenkins project
 		 * 
 		 * @return login credentials selection
-		 * 
-		 * @throws IOException
-		 * @throws ServletException
 		 */
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
-				@AncestorInPath Item project) throws IOException, ServletException
+				@AncestorInPath Item project)
 		{
 			List<StandardUsernamePasswordCredentials> creds = CredentialsProvider.lookupCredentials(
 					StandardUsernamePasswordCredentials.class, project, ACL.SYSTEM,
@@ -313,7 +304,8 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		}
 	}
 
-	/* (non-Javadoc)
+	/* 
+	 * (non-Javadoc)
 	 * @see jenkins.tasks.SimpleBuildStep#perform(hudson.model.Run, hudson.FilePath, hudson.Launcher, hudson.model.TaskListener)
 	 */
 	@Override
