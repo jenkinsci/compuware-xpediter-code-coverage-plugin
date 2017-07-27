@@ -1,20 +1,15 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
-
-      <f:entry title="${%hostConnection}" field="connectionId">
+      <f:entry title="${%hostConnection}" field="connectionId" help="/plugin/compuware-code-coverage/help-connectionId.html">
             <f:select default=""/>
       </f:entry>
-      
-      <f:entry title="${%loginCredentials}" field="credentialsId">
+      <f:entry title="${%loginCredentials}" field="credentialsId" help="/plugin/compuware-code-coverage/help-credentialsId.html">
             <c:select default=""/>
       </f:entry>
- 
-      <f:entry title="${%analysisPropertiesPath}" field="analysisPropertiesPath">
+      <f:entry title="${%analysisPropertiesPath}" field="analysisPropertiesPath" help="/plugin/compuware-code-coverage/help-analysisPropertiesPath.html">
             <f:textbox default=""/>
       </f:entry>
-      
-      <f:entry title="${%analysisProperties}" field="analysisProperties">
+      <f:entry title="${%analysisProperties}" field="analysisProperties" help="/plugin/compuware-code-coverage/help-analysisProperties.html">
             <f:textarea default="${descriptor.defaultAnalysisProperties}"/>
       </f:entry>
-
 </j:jelly>

@@ -24,6 +24,13 @@ package com.compuware.jenkins.build.utils;
 @SuppressWarnings("nls")
 public class Constants
 {
+	/**
+	 * Hidden constructor.
+	 */
+	private Constants()
+	{
+	}
+
 	public static final String FILE_SEPARATOR = "file.separator";
 	public static final String UTF_8 = "UTF-8";
 
@@ -32,9 +39,10 @@ public class Constants
 	public static final String HOST_PARM = "-host";
 	public static final String PW_PARM = "-pass";
 	public static final String PORT_PARM = "-port";
-	public static final String USERID_PARM = "-id";
 	public static final String TARGET_FOLDER_PARM = "-targetFolder";
-	
+	public static final String TIMEOUT_PARM = "-timeout";
+	public static final String USERID_PARM = "-id";
+
 	public static final String COLON = ":";
 	public static final String COMMA = ",";
 	public static final String DASH = "-";
