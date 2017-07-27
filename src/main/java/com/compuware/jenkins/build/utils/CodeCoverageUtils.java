@@ -24,6 +24,13 @@ import org.apache.commons.lang.StringUtils;
 public class CodeCoverageUtils
 {
 	/**
+	 * Hidden constructor.
+	 */
+	private CodeCoverageUtils()
+	{
+	}
+
+	/**
 	 * Returns an escaped version of the given input String for a Batch or Shell script.
 	 * 
 	 * @param input
