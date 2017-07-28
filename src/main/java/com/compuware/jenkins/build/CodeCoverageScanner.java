@@ -78,34 +78,36 @@ public class CodeCoverageScanner
 	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
 			throws IOException, InterruptedException
 	{
+		// obtain argument values to pass to the CLI
 		PrintStream logger = listener.getLogger();
 		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
-
 		VirtualChannel vChannel = launcher.getChannel();
 		Properties remoteProperties = vChannel.call(new RemoteSystemProperties());
-		String remoteFileSeparator = remoteProperties.getProperty(CommonConstants.FILE_SEPARATOR);
+		String remoteFileSeparator = remoteProperties.getProperty(CommonConstants.FILE_SEPARATOR_PROPERTY_KEY);
 		boolean isShell = launcher.isUnix();
 		String osFile = isShell ? CodeCoverageConstants.CODE_COVERAGE_CLI_SH : CodeCoverageConstants.CODE_COVERAGE_CLI_BAT;
-
 		String cliScriptFile = globalConfig.getTopazCLILocation(launcher) + remoteFileSeparator + osFile;
 		logger.println("cliScriptFile: " + cliScriptFile); //$NON-NLS-1$
-		String cliScriptFileRemote = new FilePath(vChannel, cliScriptFile).getRemote();
+		String cliScriptFileRemote = ArgumentUtils.escapeForScript(new FilePath(vChannel, cliScriptFile).getRemote());
 		logger.println("cliScriptFileRemote: " + cliScriptFileRemote); //$NON-NLS-1$
 		HostConnection connection = globalConfig.getHostConnection(m_ccBuilder.getConnectionId());
-		String host = ArgumentUtils.escapeForScript(connection.getHost(), isShell);
-		String port = ArgumentUtils.escapeForScript(connection.getPort(), isShell);
+		String host = ArgumentUtils.escapeForScript(connection.getHost());
+		String port = ArgumentUtils.escapeForScript(connection.getPort());
 		StandardUsernamePasswordCredentials credentials = globalConfig.getLoginInformation(run.getParent(),
 				m_ccBuilder.getCredentialsId());
-		String userId = ArgumentUtils.escapeForScript(credentials.getUsername(), isShell);
-		String password = ArgumentUtils.escapeForScript(credentials.getPassword().getPlainText(), isShell);
+		String userId = ArgumentUtils.escapeForScript(credentials.getUsername());
+		String password = ArgumentUtils.escapeForScript(credentials.getPassword().getPlainText());
 		String codePage = connection.getCodePage();
-		String topazCliWorkspace = workspace.getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE;
+		String targetFolder = ArgumentUtils.escapeForScript(workspace.getRemote());
+		String topazCliWorkspace = ArgumentUtils
+				.escapeForScript(workspace.getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE);
 		logger.println("topazCliWorkspace: " + topazCliWorkspace); //$NON-NLS-1$
 		String analysisPropertiesPath = m_ccBuilder.getAnalysisPropertiesPath();
 		String analysisPropertiesStr = m_ccBuilder.getAnalysisProperties();
 		Properties analysisProperties = buildAnalysisProperties(analysisPropertiesPath, analysisPropertiesStr, workspace,
 				logger);
 
+		// build the list of arguments to pass to the CLI
 		ArgumentListBuilder args = new ArgumentListBuilder();
 		args.add(cliScriptFileRemote);
 		args.add(CommonConstants.HOST_PARM, host);
@@ -114,27 +116,40 @@ public class CodeCoverageScanner
 		args.add(CommonConstants.PW_PARM);
 		args.add(password, true);
 		args.add(CommonConstants.CODE_PAGE_PARM, codePage);
-		args.add(CommonConstants.TARGET_FOLDER_PARM, workspace.getRemote());
+		args.add(CommonConstants.TARGET_FOLDER_PARM, targetFolder);
 		args.add(CommonConstants.DATA_PARM, topazCliWorkspace);
 
 		logger.print("Analysis properties after parsing/merging: "); //$NON-NLS-1$
 		for (Map.Entry<?, ?> entry : analysisProperties.entrySet())
 		{
+			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
+			logger.print(key + '=' + value + ' ');
+
+			// don't add properties that don't have values
 			if (StringUtils.isNotBlank(value))
 			{
-				String key = ArgumentUtils.prefixWithDash((String) entry.getKey());
-				value = ArgumentUtils.escapeForScript(value, isShell);
-				logger.print(key + '=' + value + ' ');
+				if (key.equals(CodeCoverageConstants.SOURCES_PARM))
+				{
+					value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
+				}
+				else
+				{
+					value = ArgumentUtils.escapeForScript(value);
+				}
+				key = ArgumentUtils.prefixWithDash((String) key);
+
 				args.add(key, value);
 			}
 		}
 		logger.println();
 
+		// create the CLI workspace (in case it doesn't already exist)
 		EnvVars env = run.getEnvironment(listener);
 		FilePath workDir = new FilePath(vChannel, workspace.getRemote());
 		workDir.mkdirs();
 
+		// invoke the CLI (execute the batch/shell script)
 		int exitValue = launcher.launch().cmds(args).envs(env).stdout(logger).pwd(workDir).join();
 		if (exitValue != 0)
 		{

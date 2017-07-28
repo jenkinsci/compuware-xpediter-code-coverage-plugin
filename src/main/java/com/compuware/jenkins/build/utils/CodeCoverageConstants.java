@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  * 
- * Copyright (c) 2016, 2017 Compuware Corporation
+ * Copyright (c) 2017 Compuware Corporation
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -35,4 +35,6 @@ public class CodeCoverageConstants
 	public static final String DEFAULT_ANALYSIS_PROPERTIES_FILE_NAME = "ccanalysis.properties";
 	public static final String CODE_COVERAGE_CLI_BAT = "CodeCoverageCLI.bat";
 	public static final String CODE_COVERAGE_CLI_SH = "CodeCoverageCLI.sh";
+
+	public static final String SOURCES_PARM = "cc.sources";
 }
