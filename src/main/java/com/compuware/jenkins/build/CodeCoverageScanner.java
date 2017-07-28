@@ -98,6 +98,7 @@ public class CodeCoverageScanner
 		String userId = ArgumentUtils.escapeForScript(credentials.getUsername());
 		String password = ArgumentUtils.escapeForScript(credentials.getPassword().getPlainText());
 		String codePage = connection.getCodePage();
+		String timeout = connection.getTimeout();
 		String targetFolder = ArgumentUtils.escapeForScript(workspace.getRemote());
 		String topazCliWorkspace = ArgumentUtils
 				.escapeForScript(workspace.getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE);
@@ -116,6 +117,7 @@ public class CodeCoverageScanner
 		args.add(CommonConstants.PW_PARM);
 		args.add(password, true);
 		args.add(CommonConstants.CODE_PAGE_PARM, codePage);
+		args.add(CommonConstants.TIMEOUT_PARM, timeout);
 		args.add(CommonConstants.TARGET_FOLDER_PARM, targetFolder);
 		args.add(CommonConstants.DATA_PARM, topazCliWorkspace);
 
