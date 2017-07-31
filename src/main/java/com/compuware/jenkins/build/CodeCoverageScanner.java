@@ -86,9 +86,10 @@ public class CodeCoverageScanner
 		String remoteFileSeparator = remoteProperties.getProperty(CommonConstants.FILE_SEPARATOR_PROPERTY_KEY);
 		boolean isShell = launcher.isUnix();
 		String osFile = isShell ? CodeCoverageConstants.CODE_COVERAGE_CLI_SH : CodeCoverageConstants.CODE_COVERAGE_CLI_BAT;
+
 		String cliScriptFile = globalConfig.getTopazCLILocation(launcher) + remoteFileSeparator + osFile;
 		logger.println("cliScriptFile: " + cliScriptFile); //$NON-NLS-1$
-		String cliScriptFileRemote = ArgumentUtils.escapeForScript(new FilePath(vChannel, cliScriptFile).getRemote());
+		String cliScriptFileRemote = new FilePath(vChannel, cliScriptFile).getRemote();
 		logger.println("cliScriptFileRemote: " + cliScriptFileRemote); //$NON-NLS-1$
 		HostConnection connection = globalConfig.getHostConnection(m_ccBuilder.getConnectionId());
 		String host = ArgumentUtils.escapeForScript(connection.getHost());
@@ -98,10 +99,9 @@ public class CodeCoverageScanner
 		String userId = ArgumentUtils.escapeForScript(credentials.getUsername());
 		String password = ArgumentUtils.escapeForScript(credentials.getPassword().getPlainText());
 		String codePage = connection.getCodePage();
-		String timeout = connection.getTimeout();
+		String timeout = ArgumentUtils.escapeForScript(connection.getTimeout());
 		String targetFolder = ArgumentUtils.escapeForScript(workspace.getRemote());
-		String topazCliWorkspace = ArgumentUtils
-				.escapeForScript(workspace.getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE);
+		String topazCliWorkspace = workspace.getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE;
 		logger.println("topazCliWorkspace: " + topazCliWorkspace); //$NON-NLS-1$
 		String analysisPropertiesPath = m_ccBuilder.getAnalysisPropertiesPath();
 		String analysisPropertiesStr = m_ccBuilder.getAnalysisProperties();
