@@ -25,11 +25,11 @@
     -->
   </properties>
 
-  <name>Compuware Code Coverage</name>
-  <description>Compuware Topaz (R) interface to specify Code Coverage (R) parameters</description>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Compuware+Code+Coverage+Plugin</url>
+  <name>Compuware Xpediter Code Coverage</name>
+  <description>Compuware Topaz (R) interface to Xpediter Code Coverage (R)</description>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Compuware+Xpediter+Code+Coverage+Plugin</url>
 
-  <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
+  <!-- The default license for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
 
   <licenses>
     <license>
@@ -83,5 +83,4 @@
       <version>1.0</version>
     </dependency>
   </dependencies>
-
 </project>
