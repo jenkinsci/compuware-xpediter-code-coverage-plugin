@@ -18,8 +18,6 @@ package com.compuware.jenkins.build;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,10 +25,11 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.compuware.jenkins.build.utils.CodeCoverageUtils;
-import com.compuware.jenkins.build.utils.Constants;
+import com.compuware.jenkins.build.utils.CodeCoverageConstants;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.configuration.HostConnection;
+import com.compuware.jenkins.common.utils.ArgumentUtils;
+import com.compuware.jenkins.common.utils.CommonConstants;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
@@ -79,65 +78,80 @@ public class CodeCoverageScanner
 	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
 			throws IOException, InterruptedException
 	{
+		// obtain argument values to pass to the CLI
 		PrintStream logger = listener.getLogger();
 		CpwrGlobalConfiguration globalConfig = CpwrGlobalConfiguration.get();
-
 		VirtualChannel vChannel = launcher.getChannel();
 		Properties remoteProperties = vChannel.call(new RemoteSystemProperties());
-		String remoteFileSeparator = remoteProperties.getProperty(Constants.FILE_SEPARATOR);
+		String remoteFileSeparator = remoteProperties.getProperty(CommonConstants.FILE_SEPARATOR_PROPERTY_KEY);
 		boolean isShell = launcher.isUnix();
-		String osFile = isShell ? Constants.CODE_COVERAGE_CLI_SH : Constants.CODE_COVERAGE_CLI_BAT;
+		String osFile = isShell ? CodeCoverageConstants.CODE_COVERAGE_CLI_SH : CodeCoverageConstants.CODE_COVERAGE_CLI_BAT;
 
 		String cliScriptFile = globalConfig.getTopazCLILocation(launcher) + remoteFileSeparator + osFile;
 		logger.println("cliScriptFile: " + cliScriptFile); //$NON-NLS-1$
 		String cliScriptFileRemote = new FilePath(vChannel, cliScriptFile).getRemote();
 		logger.println("cliScriptFileRemote: " + cliScriptFileRemote); //$NON-NLS-1$
 		HostConnection connection = globalConfig.getHostConnection(m_ccBuilder.getConnectionId());
-		String host = CodeCoverageUtils.escapeForScript(connection.getHost(), isShell);
-		String port = CodeCoverageUtils.escapeForScript(connection.getPort(), isShell);
+		String host = ArgumentUtils.escapeForScript(connection.getHost());
+		String port = ArgumentUtils.escapeForScript(connection.getPort());
 		StandardUsernamePasswordCredentials credentials = globalConfig.getLoginInformation(run.getParent(),
 				m_ccBuilder.getCredentialsId());
+		String userId = ArgumentUtils.escapeForScript(credentials.getUsername());
+		String password = ArgumentUtils.escapeForScript(credentials.getPassword().getPlainText());
 		String codePage = connection.getCodePage();
-		String timeout = CodeCoverageUtils.escapeForScript(connection.getTimeout(), isShell);
-		String userId = CodeCoverageUtils.escapeForScript(credentials.getUsername(), isShell);
-		String password = CodeCoverageUtils.escapeForScript(credentials.getPassword().getPlainText(), isShell);
-		String topazCliWorkspace = workspace.getRemote() + remoteFileSeparator + Constants.TOPAZ_CLI_WORKSPACE;
+		String timeout = ArgumentUtils.escapeForScript(connection.getTimeout());
+		String targetFolder = ArgumentUtils.escapeForScript(workspace.getRemote());
+		String topazCliWorkspace = workspace.getRemote() + remoteFileSeparator + CommonConstants.TOPAZ_CLI_WORKSPACE;
 		logger.println("topazCliWorkspace: " + topazCliWorkspace); //$NON-NLS-1$
 		String analysisPropertiesPath = m_ccBuilder.getAnalysisPropertiesPath();
 		String analysisPropertiesStr = m_ccBuilder.getAnalysisProperties();
 		Properties analysisProperties = buildAnalysisProperties(analysisPropertiesPath, analysisPropertiesStr, workspace,
 				logger);
 
+		// build the list of arguments to pass to the CLI
 		ArgumentListBuilder args = new ArgumentListBuilder();
 		args.add(cliScriptFileRemote);
-		args.add(Constants.HOST_PARM, host);
-		args.add(Constants.PORT_PARM, port);
-		args.add(Constants.CODE_PAGE_PARM, codePage);
-		args.add(Constants.TIMEOUT_PARM, timeout);
-		args.add(Constants.USERID_PARM, userId);
-		args.add(Constants.PW_PARM);
+		args.add(CommonConstants.HOST_PARM, host);
+		args.add(CommonConstants.PORT_PARM, port);
+		args.add(CommonConstants.USERID_PARM, userId);
+		args.add(CommonConstants.PW_PARM);
 		args.add(password, true);
-		args.add(Constants.TARGET_FOLDER_PARM, workspace.getRemote());
-		args.add(Constants.DATA_PARM, topazCliWorkspace);
+		args.add(CommonConstants.CODE_PAGE_PARM, codePage);
+		args.add(CommonConstants.TIMEOUT_PARM, timeout);
+		args.add(CommonConstants.TARGET_FOLDER_PARM, targetFolder);
+		args.add(CommonConstants.DATA_PARM, topazCliWorkspace);
 
 		logger.print("Analysis properties after parsing/merging: "); //$NON-NLS-1$
 		for (Map.Entry<?, ?> entry : analysisProperties.entrySet())
 		{
+			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
+			logger.print(key + '=' + value + ' ');
+
+			// don't add properties that don't have values
 			if (StringUtils.isNotBlank(value))
 			{
-				String key = prefixWithDash((String) entry.getKey());
-				value = CodeCoverageUtils.escapeForScript(value, isShell);
-				logger.print(key + '=' + value + ' ');
+				if (key.equals(CodeCoverageConstants.SOURCES_PARM))
+				{
+					value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
+				}
+				else
+				{
+					value = ArgumentUtils.escapeForScript(value);
+				}
+				key = ArgumentUtils.prefixWithDash((String) key);
+
 				args.add(key, value);
 			}
 		}
 		logger.println();
 
+		// create the CLI workspace (in case it doesn't already exist)
 		EnvVars env = run.getEnvironment(listener);
 		FilePath workDir = new FilePath(vChannel, workspace.getRemote());
 		workDir.mkdirs();
 
+		// invoke the CLI (execute the batch/shell script)
 		int exitValue = launcher.launch().cmds(args).envs(env).stdout(logger).pwd(workDir).join();
 		if (exitValue != 0)
 		{
@@ -186,7 +200,7 @@ public class CodeCoverageScanner
 		else
 		{
 			// the user did not specify a file path, so use the default file path
-			filePath = Paths.get(workspace.getRemote(), Constants.DEFAULT_ANALYSIS_PROPERTIES_FILE_NAME);
+			filePath = Paths.get(workspace.getRemote(), CodeCoverageConstants.DEFAULT_ANALYSIS_PROPERTIES_FILE_NAME);
 		}
 
 		byte[] bytes = null;
@@ -208,9 +222,9 @@ public class CodeCoverageScanner
 		{
 			try
 			{
-				String filePropertiesStr = new String(bytes, Constants.UTF_8);
+				String filePropertiesStr = new String(bytes, CommonConstants.UTF_8);
 				logger.println("Analysis properties string from file: " + filePropertiesStr); //$NON-NLS-1$
-				Properties fileProperties = convertStringToProperties(filePropertiesStr);
+				Properties fileProperties = ArgumentUtils.convertStringToProperties(filePropertiesStr);
 				analysisProperties.putAll(fileProperties);
 			}
 			catch (IOException e)
@@ -226,7 +240,7 @@ public class CodeCoverageScanner
 			try
 			{
 				logger.println("Analysis properties string from UI: " + analysisPropertiesStr); //$NON-NLS-1$
-				Properties strProperties = convertStringToProperties(analysisPropertiesStr);
+				Properties strProperties = ArgumentUtils.convertStringToProperties(analysisPropertiesStr);
 				analysisProperties.putAll(strProperties);
 			}
 			catch (IOException e)
@@ -237,48 +251,5 @@ public class CodeCoverageScanner
 		}
 
 		return analysisProperties;
-	}
-
-	/**
-	 * Converts the given properties string to a properties object.
-	 * 
-	 * @param propertiesString
-	 *            the <code>String</code> to convert
-	 * 
-	 * @return the <code>Properties</code> object
-	 * 
-	 * @throws IOException
-	 *             if an error occurred during conversion
-	 */
-	protected Properties convertStringToProperties(String propertiesString) throws IOException
-	{
-		Properties properties = new Properties();
-
-		Reader reader = new StringReader(propertiesString);
-		properties.load(reader);
-
-		return properties;
-	}
-
-	/**
-	 * Prefixes the given property with a dash (-).
-	 * <p>
-	 * If the property is already prefixed with a dash, the property is returned.
-	 * 
-	 * @param property
-	 *            the <code>String</code> property
-	 * 
-	 * @return the prefixed <code>String</code> property
-	 */
-	protected String prefixWithDash(String property)
-	{
-		String prefixedProperty = property;
-
-		if (!StringUtils.startsWith(property, Constants.DASH))
-		{
-			prefixedProperty = Constants.DASH + prefixedProperty;
-		}
-
-		return prefixedProperty;
 	}
 }
