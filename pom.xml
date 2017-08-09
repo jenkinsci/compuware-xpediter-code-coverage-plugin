@@ -19,9 +19,9 @@
     <java.level>8</java.level>
   </properties>
 
-  <name>Compuware Code Coverage</name>
-  <description>Compuware Topaz (R) interface to specify Code Coverage (R) parameters</description>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Compuware+Code+Coverage+Plugin</url>
+  <name>Compuware Xpediter Code Coverage</name>
+  <description>Compuware Topaz (R) interface to Xpediter Code Coverage (R)</description>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Compuware+Xpediter+Code+Coverage+Plugin</url>
   <licenses>
     <license>
       <name>MIT License</name>
