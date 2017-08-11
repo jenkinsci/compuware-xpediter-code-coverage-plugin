@@ -51,7 +51,7 @@ public class CodeCoverageScanner
 	 * Constructor.
 	 * 
 	 * @param config
-	 *            the <code>CodeCoverageBuilder</code> to use for scanning
+	 *            the <code>CodeCoverageBuilder</code> to use for the scan
 	 */
 	public CodeCoverageScanner(CodeCoverageBuilder config)
 	{
