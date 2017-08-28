@@ -32,6 +32,9 @@ public class CodeCoverageConstants
 	}
 
 	// Constants
+	
+	public static final String CC_MINIMUM_CLI_VERSION = "18.2.3";
+	
 	public static final String DEFAULT_ANALYSIS_PROPERTIES_FILE_NAME = "ccanalysis.properties";
 	public static final String CODE_COVERAGE_CLI_BAT = "CodeCoverageCLI.bat";
 	public static final String CODE_COVERAGE_CLI_SH = "CodeCoverageCLI.sh";
