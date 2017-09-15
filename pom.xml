@@ -9,7 +9,7 @@
     <relativePath/>
   </parent>
   <groupId>com.compuware.jenkins</groupId>
-  <artifactId>compuware-code-coverage</artifactId>
+  <artifactId>compuware-xpediter-code-coverage</artifactId>
   <version>1.0</version>
   <packaging>hpi</packaging>
 
