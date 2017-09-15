@@ -1,2 +1,2 @@
 # CPWR-CodeCoverage
-Compuware Topaz (R) interface to specify Code Coverage (R) parameters
+Compuware Topaz (R) interface to retrieve Xpediter Code Coverage (R) statistics from a z/OS host. 
