@@ -52,6 +52,7 @@ public class CodeCoverageBuilderTest
 	
 	private static final String EXPECTED_HOST = "cw01";
 	private static final String EXPECTED_PORT = "30947";
+	private static final String EXPECTED_CES_URL = "https://expectedcesurl/";
 	private static final String EXPECTED_CODE_PAGE = "1047";
 	private static final String EXPECTED_TIMEOUT = "123";
 	private static final String EXPECTED_USER_ID = "xdevreg";
@@ -73,6 +74,7 @@ public class CodeCoverageBuilderTest
 			hostConnection.put("codePage", EXPECTED_CODE_PAGE);
 			hostConnection.put("timeout", EXPECTED_TIMEOUT);
 			hostConnection.put("connectionId", EXPECTED_CONNECTION_ID);
+			hostConnection.put("cesUrl", EXPECTED_CES_URL);
 
 			JSONArray hostConnections = new JSONArray();
 			hostConnections.add(hostConnection);
