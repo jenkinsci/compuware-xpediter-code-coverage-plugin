@@ -1,15 +1,15 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials" xmlns:cc="/lib/compuware">
-      <f:entry title="${%hostConnection}" field="connectionId" help="/plugin/compuware-code-coverage/help-connectionId.html">
+      <f:entry title="${%hostConnection}" field="connectionId" help="/plugin/compuware-xpediter-code-coverage/help-connectionId.html">
             <cc:hostSelect default=""/>
       </f:entry>
-      <f:entry title="${%loginCredentials}" field="credentialsId" help="/plugin/compuware-code-coverage/help-credentialsId.html">
+      <f:entry title="${%loginCredentials}" field="credentialsId" help="/plugin/compuware-xpediter-code-coverage/help-credentialsId.html">
             <c:select default=""/>
       </f:entry>
-      <f:entry title="${%analysisPropertiesPath}" field="analysisPropertiesPath" help="/plugin/compuware-code-coverage/help-analysisPropertiesPath.html">
+      <f:entry title="${%analysisPropertiesPath}" field="analysisPropertiesPath" help="/plugin/compuware-xpediter-code-coverage/help-analysisPropertiesPath.html">
             <f:textbox default=""/>
       </f:entry>
-      <f:entry title="${%analysisProperties}" field="analysisProperties" help="/plugin/compuware-code-coverage/help-analysisProperties.html">
+      <f:entry title="${%analysisProperties}" field="analysisProperties" help="/plugin/compuware-xpediter-code-coverage/help-analysisProperties.html">
             <f:textarea default="${descriptor.defaultAnalysisProperties}"/>
       </f:entry>
 </j:jelly>
