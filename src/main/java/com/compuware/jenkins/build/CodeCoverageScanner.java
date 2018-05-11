@@ -218,9 +218,10 @@ public class CodeCoverageScanner
 		}
 		catch (IOException e)
 		{
-			logger.println("An IOException occurred while obtaining analysis properties from the file: " + e.toString()); //$NON-NLS-1$
+			// An error should be displayed only if an analysis file was specified in the configuration.
 			if (filePathSpecified)
 			{
+				logger.println("An IOException occurred while obtaining analysis properties from the file: " + e.toString()); //$NON-NLS-1$
 				e.printStackTrace(logger);
 			}
 		}
