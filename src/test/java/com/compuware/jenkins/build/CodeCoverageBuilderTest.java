@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  * 
- * Copyright (c) 2018 Compuware Corporation
+ * Copyright (c) 2018, 2019 Compuware Corporation
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -53,6 +53,7 @@ public class CodeCoverageBuilderTest
 	private static final String EXPECTED_HOST = "cw01";
 	private static final String EXPECTED_PORT = "30947";
 	private static final String EXPECTED_CES_URL = "https://expectedcesurl/";
+	private static final String EXPECTED_PROTOCOL = "TLSv1.2";
 	private static final String EXPECTED_CODE_PAGE = "1047";
 	private static final String EXPECTED_TIMEOUT = "123";
 	private static final String EXPECTED_USER_ID = "xdevreg";
@@ -71,6 +72,7 @@ public class CodeCoverageBuilderTest
 			JSONObject hostConnection = new JSONObject();
 			hostConnection.put("description", "TestConnection");
 			hostConnection.put("hostPort", EXPECTED_HOST + ':' + EXPECTED_PORT);
+			hostConnection.put("protocol", EXPECTED_PROTOCOL);
 			hostConnection.put("codePage", EXPECTED_CODE_PAGE);
 			hostConnection.put("timeout", EXPECTED_TIMEOUT);
 			hostConnection.put("connectionId", EXPECTED_CONNECTION_ID);
@@ -187,7 +189,11 @@ public class CodeCoverageBuilderTest
 				assertThat("Expected log to contain Host connection: " + expectedConnectionStr + '.', logFileOutput,
 						containsString(expectedConnectionStr));
 
-				String expectedCodePageStr = String.format("-code %s", EXPECTED_CODE_PAGE);
+				String expectedProtocolStr = String.format("-protocol %s", EXPECTED_PROTOCOL);
+				assertThat("Expected log to contain Host protocol: " + expectedProtocolStr + '.', logFileOutput,
+						containsString(expectedProtocolStr));
+
+				String expectedCodePageStr = String.format("-protocol %s", EXPECTED_CODE_PAGE);
 				assertThat("Expected log to contain Host code page: " + expectedCodePageStr + '.', logFileOutput,
 						containsString(expectedCodePageStr));
 
