@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  * 
- * Copyright (c) 2018 Compuware Corporation
+ * Copyright (c) 2018, 2019 Compuware Corporation
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -16,24 +16,25 @@
  */
 package com.compuware.jenkins.build;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.Stapler;
+
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.compuware.jenkins.build.CodeCoverageBuilder.CodeCoverageDescriptorImpl;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
-import hudson.model.FreeStyleBuild;
+
 import hudson.model.FreeStyleProject;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -53,6 +54,7 @@ public class CodeCoverageBuilderTest
 	private static final String EXPECTED_HOST = "cw01";
 	private static final String EXPECTED_PORT = "30947";
 	private static final String EXPECTED_CES_URL = "https://expectedcesurl/";
+	private static final String EXPECTED_PROTOCOL = "TLSv1.2";
 	private static final String EXPECTED_CODE_PAGE = "1047";
 	private static final String EXPECTED_TIMEOUT = "123";
 	private static final String EXPECTED_USER_ID = "xdevreg";
@@ -71,6 +73,7 @@ public class CodeCoverageBuilderTest
 			JSONObject hostConnection = new JSONObject();
 			hostConnection.put("description", "TestConnection");
 			hostConnection.put("hostPort", EXPECTED_HOST + ':' + EXPECTED_PORT);
+			hostConnection.put("protocol", EXPECTED_PROTOCOL);
 			hostConnection.put("codePage", EXPECTED_CODE_PAGE);
 			hostConnection.put("timeout", EXPECTED_TIMEOUT);
 			hostConnection.put("connectionId", EXPECTED_CONNECTION_ID);
@@ -146,66 +149,6 @@ public class CodeCoverageBuilderTest
 					defaultAnalysisProperties, is(notNullValue()));
 			assertThat("Expected CodeCoverageBuilder.DescriptorImpl.getDefaultAnalysisProperties() to not be empty.",
 					defaultAnalysisProperties.isEmpty(), is(false));
-		}
-		catch (Exception e)
-		{
-			// Add the print of the stack trace because the exception message is not enough to troubleshoot the root issue. For
-			// example, if the exception is constructed without a message, you get no information from executing fail().
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-	}
-
-	/**
-	 * Tests the results of an execution.
-	 * <p>
-	 * A project is created, configured and executed where the log is examined to verify results.
-	 */
-	@Test
-	public void executionTest()
-	{
-		try
-		{
-			FreeStyleProject project = m_jenkinsRule.createFreeStyleProject("TestProject");
-			project.getBuildersList().add(new CodeCoverageBuilder(EXPECTED_CONNECTION_ID, EXPECTED_CREDENTIALS_ID, EXPECTED_ANALYSIS_PROPERTIES_FILEPATH,
-					EXPECTED_ANALYSIS_PROPERTIES_STRING));
-
-			// don't expect the build to succeed since no CLI exists
-			if (project.scheduleBuild(null))
-			{
-				while (project.getLastCompletedBuild() == null)
-				{
-					// wait for the build to complete before obtaining the log
-					continue;
-				}
-
-				FreeStyleBuild build = project.getLastCompletedBuild();
-				String logFileOutput = JenkinsRule.getLog(build);
-				
-				/*
-				String expectedConnectionStr = String.format("-host \"%s\" -port \"%s\"", EXPECTED_HOST, EXPECTED_PORT);
-				assertThat("Expected log to contain Host connection: " + expectedConnectionStr + '.', logFileOutput,
-						containsString(expectedConnectionStr));
-
-				String expectedCodePageStr = String.format("-code %s", EXPECTED_CODE_PAGE);
-				assertThat("Expected log to contain Host code page: " + expectedCodePageStr + '.', logFileOutput,
-						containsString(expectedCodePageStr));
-
-				String expectedTimeoutStr = String.format("-timeout \"%s\"", EXPECTED_TIMEOUT);
-				assertThat("Expected log to contain Host timeout: " + expectedTimeoutStr + '.', logFileOutput,
-						containsString(expectedTimeoutStr));
-
-				String expectedCredentialsStr = String.format("-id \"%s\" -pass %s", EXPECTED_USER_ID, EXPECTED_PASSWORD);
-				assertThat("Expected log to contain Login credentials: " + expectedCredentialsStr + '.', logFileOutput,
-						containsString(expectedCredentialsStr));
-
-				assertThat(String.format("Expected log to contain Analysis properties path: \"%s\".",
-						EXPECTED_ANALYSIS_PROPERTIES_FILEPATH), logFileOutput, containsString(EXPECTED_ANALYSIS_PROPERTIES_FILEPATH));
-
-				assertThat(String.format("Expected log to contain Analysis properties: \"%s\".", EXPECTED_ANALYSIS_PROPERTIES_STRING),
-						logFileOutput, containsString(EXPECTED_ANALYSIS_PROPERTIES_STRING));
-				*/
-			}
 		}
 		catch (Exception e)
 		{
