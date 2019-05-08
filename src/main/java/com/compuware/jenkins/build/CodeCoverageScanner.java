@@ -138,14 +138,21 @@ public class CodeCoverageScanner
 		args.add(CommonConstants.TIMEOUT_PARM, timeout);
 		args.add(CommonConstants.TARGET_FOLDER_PARM, targetFolder);
 		args.add(CommonConstants.DATA_PARM, topazCliWorkspace);
-
+		
 		logger.print("Analysis properties after parsing/merging: "); //$NON-NLS-1$
 		for (Map.Entry<?, ?> entry : analysisProperties.entrySet())
 		{
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
-			logger.print(key + '=' + value + ' ');
-
+			
+			// If user already entered quotes, then remove them before passing it to CLI
+			if(value.contains("\"")) {
+				value = value.replace("\"", "");
+				analysisProperties.replace(key, value);
+			}
+			
+			logger.println(key + '=' + value + ' ');
+			
 			// don't add properties that don't have values
 			if (StringUtils.isNotBlank(value))
 			{
@@ -163,7 +170,7 @@ public class CodeCoverageScanner
 			}
 		}
 		logger.println();
-
+		
 		// create the CLI workspace (in case it doesn't already exist)
 		EnvVars env = run.getEnvironment(listener);
 		FilePath workDir = new FilePath(vChannel, workspace.getRemote());
