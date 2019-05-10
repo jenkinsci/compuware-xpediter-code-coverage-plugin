@@ -145,12 +145,6 @@ public class CodeCoverageScanner
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
 			
-			// If user already entered quotes, then remove them before passing it to CLI
-			if(value.contains("\"")) {
-				value = value.replace("\"", "");
-				analysisProperties.replace(key, value);
-			}
-			
 			logger.println(key + '=' + value + ' ');
 			
 			// don't add properties that don't have values
@@ -160,10 +154,7 @@ public class CodeCoverageScanner
 				{
 					value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
 				}
-				else
-				{
-					value = ArgumentUtils.escapeForScript(value);
-				}
+				
 				key = ArgumentUtils.prefixWithDash((String) key);
 
 				args.add(key, value);
