@@ -140,26 +140,7 @@ public class CodeCoverageScanner
 		args.add(CommonConstants.DATA_PARM, topazCliWorkspace);
 		
 		logger.print("Analysis properties after parsing/merging: "); //$NON-NLS-1$
-		for (Map.Entry<?, ?> entry : analysisProperties.entrySet())
-		{
-			String key = (String) entry.getKey();
-			String value = (String) entry.getValue();
-			
-			logger.println(key + '=' + value + ' ');
-			
-			// don't add properties that don't have values
-			if (StringUtils.isNotBlank(value))
-			{
-				if (key.equals(CodeCoverageConstants.SOURCES_PARM))
-				{
-					value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
-				}
-				
-				key = ArgumentUtils.prefixWithDash((String) key);
-
-				args.add(key, value);
-			}
-		}
+		analysisPropertiesHandler(logger, analysisProperties, args);
 		logger.println();
 		
 		// create the CLI workspace (in case it doesn't already exist)
@@ -179,6 +160,45 @@ public class CodeCoverageScanner
 		}
 	}
 
+	/** Handles the Analysis Properties values, and quotation marks.
+	 * 
+	 * @param logger
+	 * 				the <code>PrintStream</code> to use for capturing log statements.
+	 * @param analysisProperties
+	 * 				Map containing Analysis Properties.
+	 * @param args
+	 * 				the list of arguments to pass to the CLI.
+	 */
+	protected void analysisPropertiesHandler(PrintStream logger, Properties analysisProperties,
+			ArgumentListBuilder args) {
+		for (Map.Entry<?, ?> entry : analysisProperties.entrySet())
+		{
+			String key = (String) entry.getKey();
+			String value = (String) entry.getValue();
+			
+			logger.print(key + '=' + value + ' ');
+			
+			// don't add properties that don't have values
+			if (StringUtils.isNotBlank(value))
+			{
+				
+				if (key.equals(CodeCoverageConstants.SOURCES_PARM))
+				{
+					value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
+				}
+				else
+				{
+					value = ArgumentUtils.escapeForScript(value);
+				}
+				
+				key = ArgumentUtils.prefixWithDash((String) key);
+				args.add(key, value);
+				
+			}
+		}
+	}
+	
+	
 	/**
 	 * Builds and returns a list of properties using the given analysis file path and string.
 	 * <p>
