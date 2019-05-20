@@ -181,9 +181,17 @@ public class CodeCoverageScanner
 			// don't add properties that don't have values
 			if (StringUtils.isNotBlank(value))
 			{
-				value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
 				
+				if (key.equals(CodeCoverageConstants.SOURCES_PARM))
+				{
+					value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
+				}
+				else
+				{
+					value = ArgumentUtils.escapeForScript(value);
+				}
 				key = ArgumentUtils.prefixWithDash((String) key);
+
 				args.add(key, value);
 				
 			}
