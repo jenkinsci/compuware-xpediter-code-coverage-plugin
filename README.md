@@ -171,6 +171,5 @@ Note: Please report all high-priority issues by phone.
 To access Compuware\'s site on the Web, go to [https://www.compuware.com](https://www.compuware.com/). The Compuware site provides a variety of product and support information.
 
 ## Change Log
-
-See [https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin/releases](https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin/releases/)
+See [Change Log](https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin/blob/master/CHANGELOG.md)
 
