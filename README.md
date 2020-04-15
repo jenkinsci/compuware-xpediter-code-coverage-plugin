@@ -1,6 +1,6 @@
 # Compuware Xpediter Code Coverage Plugin
 
-[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/compuware-xpediter-code-coverage.svg)](https://plugins.jenkins.io/compuware-xpediter-code-coverage) [![GitHub release](https://img.shields.io/github/v/release/jenkinsci/compuware-xpediter-code-coverage.svg?label=release)](https://github.com/jenkinsci/compuware-xpediter-code-coverage/releases/latest) [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/compuware-xpediter-code-coverage.svg?color=blue)](https://plugins.jenkins.io/compuware-xpediter-code-coverage)
+[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/compuware-xpediter-code-coverage.svg)](https://plugins.jenkins.io/compuware-xpediter-code-coverage) [![GitHub release](https://img.shields.io/github/v/release/jenkinsci/compuware-xpediter-code-coverage.svg?label=release)](https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin/releases) [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/compuware-xpediter-code-coverage.svg?color=blue)](https://plugins.jenkins.io/compuware-xpediter-code-coverage)
 
 ![](docs/images/compuware.xped.cc.png)
 
