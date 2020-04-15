@@ -1,7 +1,7 @@
 Change Log
 =========
 
-1.05
+1.0.5
 ------
 
 Updated referenced [Compuware Common Configuration](https://plugins.jenkins.io/compuware-common-configuration/) plugin version. 
