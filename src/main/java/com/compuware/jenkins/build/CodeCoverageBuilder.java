@@ -2,6 +2,7 @@
  * The MIT License (MIT)
  * 
  * Copyright (c) 2018 Compuware Corporation
+ * (c) Copyright 2015 - 2019, 2021 BMC Software, Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
@@ -25,7 +26,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.configuration.HostConnection;
@@ -280,14 +281,14 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
 				@AncestorInPath Item project)
 		{
-			List<StandardUsernamePasswordCredentials> creds = CredentialsProvider.lookupCredentials(
-					StandardUsernamePasswordCredentials.class, project, ACL.SYSTEM,
+			List<StandardCredentials> creds = CredentialsProvider.lookupCredentials(
+					StandardCredentials.class, project, ACL.SYSTEM,
 					Collections.<DomainRequirement> emptyList());
 
 			ListBoxModel model = new ListBoxModel();
 			model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
 
-			for (StandardUsernamePasswordCredentials c : creds)
+			for (StandardCredentials c : creds)
 			{
 				boolean isSelected = false;
 				if (credentialsId != null)
@@ -296,7 +297,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 				}
 
 				String description = Util.fixEmptyAndTrim(c.getDescription());
-				model.add(new Option(c.getUsername() + (description != null ? " (" + description + ')' : StringUtils.EMPTY), //$NON-NLS-1$
+				model.add(new Option(CpwrGlobalConfiguration.get().getCredentialsUser(c) + (description != null ? (" (" + description + ')') : StringUtils.EMPTY), //$NON-NLS-1$
 						c.getId(), isSelected));
 			}
 
