@@ -20,6 +20,9 @@ package com.compuware.jenkins.build;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -30,6 +33,8 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.configuration.HostConnection;
+
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -53,6 +58,8 @@ import net.sf.json.JSONObject;
  */
 public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 {
+	private static final Logger LOGGER = Logger.getLogger("hudson.CodeCoverageBuilder"); //$NON-NLS-1$
+
 	// Member Variables
 	private final String m_connectionId;
 	private final String m_credentialsId;
@@ -297,8 +304,12 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 				}
 
 				String description = Util.fixEmptyAndTrim(c.getDescription());
-				model.add(new Option(CpwrGlobalConfiguration.get().getCredentialsUser(c) + (description != null ? (" (" + description + ')') : StringUtils.EMPTY), //$NON-NLS-1$
-						c.getId(), isSelected));
+				try {
+					model.add(new Option(CpwrGlobalConfiguration.get().getCredentialsUser(c)
+							+ (description != null ? (" (" + description + ')') : StringUtils.EMPTY), c.getId(), isSelected)); //$NON-NLS-1$
+				} catch (AbortException e) {
+					LOGGER.log(Level.WARNING, e.getMessage());
+				}
 			}
 
 			return model;
