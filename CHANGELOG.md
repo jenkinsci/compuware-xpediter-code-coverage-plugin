@@ -1,6 +1,12 @@
 Change Log
 =========
 
+
+1.0.6
+------
+
+Rebrand [BMC AMI DevX Code Debug Code Coverage](https://plugins.jenkins.io/compuware-xpediter-code-coverage/) plugin. 
+
 1.0.5
 ------
 
