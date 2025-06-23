@@ -20,8 +20,8 @@
     <java.level>8</java.level>
   </properties>
 
-  <name>Compuware Xpediter Code Coverage</name>
-  <description>Compuware Topaz (R) interface to Xpediter Code Coverage (R)</description>
+  <name>BMC AMI DevX Code Debug Code Coverage</name>
+  <description>BMC AMI DevX Workbench (R) interface to Code Debug Code Coverage (R)</description>
   <url>https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin</url>
   <licenses>
     <license>
