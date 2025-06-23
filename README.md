@@ -21,7 +21,7 @@ The following are required to use this plugin:
 ## Installing in a Jenkins Instance
 
 1. Install the BMC AMI DevX Code Debug Code Coverage plugin according to the Jenkins instructions for installing plugins. Dependent plugins will automatically be installed.
-2. Install the BMC AMI DevX Workbench CLI on the Jenkins instances that will execute the plugin. The BMC AMI DevX Workbench CLI is available in the BMC AMI DevX Workbench installation package. If you do not have the installation package, please visit [support.bmc.com](https://support.bmc.com/). For Topaz Workbench CLI installation instructions, please refer to the [BMC AMI DevX Workbench Install Guide](https://docs.bmc.com/docs/x/Lk5QRw).
+2. Install the BMC AMI DevX Workbench CLI on the Jenkins instances that will execute the plugin. The BMC AMI DevX Workbench CLI is available in the BMC AMI DevX Workbench installation package. If you do not have the installation package, please visit [support.bmc.com](https://support.bmc.com/). For BMC AMI DevX Workbench CLI installation instructions, please refer to the [BMC AMI DevX Workbench Install Guide](https://docs.bmc.com/docs/x/Lk5QRw).
 
 ## Configuring for BMC AMI DevX Workbench CLI & Host Connections
 
