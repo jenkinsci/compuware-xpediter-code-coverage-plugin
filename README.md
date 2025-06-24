@@ -16,7 +16,7 @@ The following are required to use this plugin:
 - BMC AMI DevX Workbench CLI 18.2.4 or later. Refer to the [BMC AMI DevX Workbench Install Guide](https://docs.bmc.com/docs/x/Lk5QRw) for instructions.
 - Host Communications Interface
 - BMC AMI DevX Code Debug/Code Coverage 17.2, PTF PA01563
-- BMC Shared Services 17.2, PTF CXS527A
+- BMC AMI Common Shared Services 17.2, PTF CXS527A
 
 ## Installing in a Jenkins Instance
 
@@ -103,7 +103,7 @@ During the **Execute SonarQube Scanner Step**, add the following property to imp
 
 ## Known Limitations
 - COBOL is currently the only language supported.
-- Source code must be compiled using the BMC Shared Services(CSS) pre-processor.
+- Source code must be compiled using the BMC AMI Common Shared Services (CSS) pre-processor.
      - Other pre-processors can cause changes to the original source file that are undetectable to CSS.
 - Nested copybooks within the procedure division are not supported.
 - COBOL COPY REPLACING statements in the procedure division may cause source mismatches.
