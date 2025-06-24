@@ -1,39 +1,39 @@
-# Compuware Xpediter Code Coverage Plugin
+# BMC AMI DevX Code Debug Code Coverage Plugin
 
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/compuware-xpediter-code-coverage.svg)](https://plugins.jenkins.io/compuware-xpediter-code-coverage) [![GitHub release](https://img.shields.io/github/v/release/jenkinsci/compuware-xpediter-code-coverage.svg?label=release)](https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin/releases) [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/compuware-xpediter-code-coverage.svg?color=blue)](https://plugins.jenkins.io/compuware-xpediter-code-coverage)
 
-![](docs/images/compuware.xped.cc.png)
+# <img src="docs/images/bmc_brandmark.png" width="45" height="45">BMC AMI DevX Code Debug Code Coverage
 
 ## Overview
 
-The Compuware Xpediter Code Coverage plugin allows Jenkins users to extract code coverage results for COBOL source from a Compuware Code Coverage repository. These results can then be viewed in SonarQube.
+The BMC AMI DevX Code Debug Code Coverage plugin allows Jenkins users to extract code coverage results for COBOL source from a BMC AMI DevX Code Coverage repository. These results can then be viewed in SonarQube.
 
 ## Prerequisites
 
 The following are required to use this plugin:
 - Jenkins
 - Jenkins Credentials Plugin
-- Topaz Workbench CLI 18.2.4 or later. Refer to the [Topaz Workbench Install Guide](https://docs.compuware.com/kb/KB2001/PDF/TopazWorkbench_Install.pdf) for instructions.
+- BMC AMI DevX Workbench CLI 18.2.4 or later. Refer to the [BMC AMI DevX Workbench Install Guide](https://docs.bmc.com/docs/x/Lk5QRw) for instructions.
 - Host Communications Interface
-- Xpediter/Code Coverage 17.2, PTF PA01563
-- Compuware Shared Services 17.2, PTF CXS527A
+- BMC AMI DevX Code Debug/Code Coverage 17.2, PTF PA01563
+- BMC AMI Common Shared Services 17.2, PTF CXS527A
 
 ## Installing in a Jenkins Instance
 
-1. Install the Compuware Xpediter Code Coverage plugin according to the Jenkins instructions for installing plugins. Dependent plugins will automatically be installed.
-2. Install the Topaz Workbench CLI on the Jenkins instances that will execute the plugin. The Topaz Workbench CLI is available in the Topaz Workbench installation package. If you do not have the installation package, please visit [support.compuware.com](https://support.compuware.com/). For Topaz Workbench CLI installation instructions, please refer to the [Topaz Workbench Install Guide](https://docs.compuware.com/kb/KB2001/PDF/TopazWorkbench_Install.pdf).
+1. Install the BMC AMI DevX Code Debug Code Coverage plugin according to the Jenkins instructions for installing plugins. Dependent plugins will automatically be installed.
+2. Install the BMC AMI DevX Workbench CLI on the Jenkins instances that will execute the plugin. The BMC AMI DevX Workbench CLI is available in the BMC AMI DevX Workbench installation package. If you do not have the installation package, please visit [support.bmc.com](https://support.bmc.com/). For BMC AMI DevX Workbench CLI installation instructions, please refer to the [BMC AMI DevX Workbench Install Guide](https://docs.bmc.com/docs/x/Lk5QRw).
 
-## Configuring for Topaz Workbench CLI & Host Connections
+## Configuring for BMC AMI DevX Workbench CLI & Host Connections
 
-In order to access Code Coverage data you will need to point to an installed Topaz Workbench Command Line Interface (CLI). The Topaz Workbench CLI will work with host connection(s) you also need to configure to download Code Coverage data.
+In order to access Code Coverage data you will need to point to an installed BMC AMI DevX Workbench Command Line Interface (CLI). The BMC AMI DevX Workbench CLI will work with host connection(s) you also need to configure to download Code Coverage data.
 
-- See [Configuring for Topaz Workbench CLI & Host Connections](https://github.com/jenkinsci/compuware-common-configuration-plugin/blob/master/README.md#user-content-configuring-for-topaz-workbench-cli--host-connections)
+- See [Configuring for BMC AMI DevX Workbench CLI & Host Connections](https://github.com/jenkinsci/compuware-common-configuration-plugin/blob/master/README.md#user-content-configuring-for-topaz-workbench-cli--host-connections)
 
-### Retrieve Xpediter Code Coverage Statistics
+### Retrieve BMC AMI DevX Code Debug Code Coverage Statistics
 
 This integration allows downloading of Code Coverage data from a repository.
 
-On the **Configuration** page of the job or project, in the **Build** section, from the **Add build step** list, select **Retrieve Xpediter Code Coverage Statistics**.
+On the **Configuration** page of the job or project, in the **Build** section, from the **Add build step** list, select **Retrieve BMC AMI DevX Code Debug Code Coverage Statistics**.
 
 This build action has following parameters:
 
@@ -78,7 +78,7 @@ During the **Execute SonarQube Scanner Step**, add the following property to imp
 
 - **Sample Step** : Select **General Build Step** .
 
-- **Build Step** : Select **Retrieve Xpediter Code Coverage Statistics** .
+- **Build Step** : Select **Retrieve BMC AMI DevX Code Debug Code Coverage Statistics** .
 
 - Complete the displayed fields.
 
@@ -103,48 +103,48 @@ During the **Execute SonarQube Scanner Step**, add the following property to imp
 
 ## Known Limitations
 - COBOL is currently the only language supported.
-- Source code must be compiled using the Compuware Shared Services(CSS) pre-processor.
+- Source code must be compiled using the BMC AMI Common Shared Services (CSS) pre-processor.
      - Other pre-processors can cause changes to the original source file that are undetectable to CSS.
 - Nested copybooks within the procedure division are not supported.
 - COBOL COPY REPLACING statements in the procedure division may cause source mismatches.
 
 ## Product Assistance
 
-Compuware provides assistance for customers with its documentation, the Compuware Support Center web site, and telephone customer support.
+BMC provides assistance for customers with its documentation, the BMC Support Center web site, and telephone customer support.
 
-### Compuware Support Center
+### BMC Support Center
 
-You can access online information for Compuware products via our Support Center site at [https://support.compuware.com](https://support.compuware.com/). Support Center provides access to critical information about your Compuware products. You can review frequently asked questions, read or download documentation, access product fixes, or e-mail your questions or comments. The first time you access Support Center, you must register and obtain a password. Registration is free.
+You can access online information for BMC products via our Support Center site at [https://support.bmc.com](https://support.bmc.com/). Support Center provides access to critical information about your BMC products. You can review frequently asked questions, read or download documentation, access product fixes, or e-mail your questions or comments. The first time you access Support Center, you must register and obtain a password. Registration is free.
 
 ### Contacting Customer Support
 
-At Compuware, we strive to make our products and documentation the best in the industry. Feedback from our customers helps us maintain our quality standards. If you need support services, please obtain the following information before calling Compuware\'s 24-hour telephone support:
+At BMC, we strive to make our products and documentation the best in the industry. Feedback from our customers helps us maintain our quality standards. If you need support services, please obtain the following information before calling BMC\'s 24-hour telephone support:
 
 - The Jenkins job console output that contains any error messages or pertinent information.
 
-- The name, release number, and build number of your product. This information is displayed in the Jenkins / Plugin Manager and go to the Installed tab. Apply filter: Compuware in order to display all of the installed Compuware plugins.
+- The name, release number, and build number of your product. This information is displayed in the Jenkins / Plugin Manager and go to the Installed tab. Apply filter: BMC in order to display all of the installed BMC plugins.
 
 - Job information, whether the job uses Pipeline script or Freestyle project.
 
-- Environment information, such as the operating system and release on which the Topaz CLI is installed.
+- Environment information, such as the operating system and release on which the BMC AMI DevX CLI is installed.
 
-You can contact Compuware in one of the following ways:
+You can contact BMC in one of the following ways:
 
 #### Phone
 
 - USA and Canada: 1-800-538-7822 or 1-313-227-5444.
 
-- All other countries: Contact your local Compuware office. Contact information is available at [https://support.compuware.com](https://support.compuware.com/).
+- All other countries: Contact your local BMC office. Contact information is available at [https://support.bmc.com](https://support.bmc.com/).
 
 #### Web
 
-You can report issues via Compuware Support Center: [https://support.compuware.com](https://support.compuware.com/).
+You can report issues via BMC Support Center: [https://support.bmc.com](https://support.bmc.com/).
 
 Note: Please report all high-priority issues by phone.
 
 ### Corporate Web Site
 
-To access Compuware\'s site on the Web, go to [https://www.compuware.com](https://www.compuware.com/). The Compuware site provides a variety of product and support information.
+To access bmc\'s site on the Web, go to [https://www.bmc.com](https://www.bmc.com/). The BMC site provides a variety of product and support information.
 
 ## Change Log
 See [Change Log](https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin/blob/master/CHANGELOG.md)
