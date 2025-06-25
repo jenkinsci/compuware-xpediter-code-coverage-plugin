@@ -1,15 +1,15 @@
 /**
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2018 Compuware Corporation
  * (c) Copyright 2015 - 2019, 2021 BMC Software, Inc.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
  * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice
  * shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
-import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
 import com.compuware.jenkins.common.configuration.HostConnection;
 
@@ -68,7 +68,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param connectionId
 				  a unique host connection identifier
 	 * @param credentialsId
@@ -90,7 +90,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 	/**
 	 * Gets the unique identifier of the 'Host connection'.
-	 * 
+	 *
 	 * @return <code>String</code> value of m_connectionId
 	 */
 	public String getConnectionId()
@@ -100,7 +100,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 	/**
 	 * Gets the value of the 'Login credentials'.
-	 * 
+	 *
 	 * @return <code>String</code> value of m_credentialsId
 	 */
 	public String getCredentialsId()
@@ -110,7 +110,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 	/**
 	 * Gets the value of the 'Path to analysis properties'.
-	 * 
+	 *
 	 * @return <code>String</code> value of m_analysisPropertiesPath
 	 */
 	public String getAnalysisPropertiesPath()
@@ -120,20 +120,20 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 	/**
 	 * Gets the value of the 'Analysis properties'.
-	 * 
+	 *
 	 * @return <code>String</code> value of m_analysisProperties
 	 */
 	public String getAnalysisProperties()
 	{
 		return m_analysisProperties;
 	}
-    
+
     /*
 	 * (non-Javadoc)
 	 * @see hudson.tasks.Builder#getDescriptor()
 	 */
     @Override
-    public CodeCoverageDescriptorImpl getDescriptor() 
+    public CodeCoverageDescriptorImpl getDescriptor()
     {
 		return (CodeCoverageDescriptorImpl) super.getDescriptor();
     }
@@ -172,6 +172,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 * (non-Javadoc)
 		 * @see hudson.model.Descriptor#getDisplayName()
 		 */
+		@NonNull
 		@Override
 		public String getDisplayName()
 		{
@@ -180,10 +181,10 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 		/*
 		 * (non-Javadoc)
-		 * @see hudson.model.Descriptor#configure(org.kohsuke.stapler.StaplerRequest, net.sf.json.JSONObject)
+		 * @see hudson.model.Descriptor#configure(org.kohsuke.stapler.StaplerRequest2, net.sf.json.JSONObject)
 		 */
 		@Override
-		public boolean configure(StaplerRequest req, JSONObject formData) throws FormException
+		public boolean configure(StaplerRequest2 req, JSONObject formData) throws FormException
 		{
 			save();
 			return super.configure(req, formData);
@@ -191,7 +192,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 		/**
 		 * Get the default value for 'Analysis properties'
-		 * 
+		 *
 		 * @return the default value for 'Analysis properties'
 		 */
 		public String getDefaultAnalysisProperties()
@@ -201,10 +202,10 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 		/**
 		 * Validator for the 'Host connection' field.
-		 * 
+		 *
 		 * @param connectionId
 		 *            unique identifier for the host connection passed from the config.jelly "connectionId" field
-		 * 
+		 *
 		 * @return validation message
 		 */
 		public FormValidation doCheckConnectionId(@QueryParameter String connectionId)
@@ -220,10 +221,10 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 		/**
 		 * Validator for the 'Login credentials' field.
-		 * 
+		 *
 		 * @param credentialsId
 		 *            login credentials passed from the config.jelly "credentialsId" field
-		 * 
+		 *
 		 * @return validation message
 		 */
 		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId)
@@ -239,14 +240,14 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 		/**
 		 * Fills in the Host Connection selection box with applicable connections.
-		 * 
+		 *
 		 * @param context
 		 *            filter for host connections
 		 * @param connectionId
 		 *            an existing host connection identifier; can be null
 		 * @param project
 		 *            the Jenkins project
-		 * 
+		 *
 		 * @return host connection selections
 		 */
 		public ListBoxModel doFillConnectionIdItems(@AncestorInPath Jenkins context, @QueryParameter String connectionId,
@@ -281,14 +282,14 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 
 		/**
 		 * Fills in the Login Credentials selection box with applicable connections.
-		 * 
+		 *
 		 * @param context
 		 *            filter for login credentials
 		 * @param credentialsId
 		 *            existing login credentials; can be null
 		 * @param project
 		 *            the Jenkins project
-		 * 
+		 *
 		 * @return login credentials selection
 		 */
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Jenkins context, @QueryParameter String credentialsId,
@@ -300,9 +301,9 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 				project.checkPermission(Item.CONFIGURE);
 			}
 
-			List<StandardCredentials> creds = CredentialsProvider.lookupCredentials(
-					StandardCredentials.class, project, ACL.SYSTEM,
-					Collections.<DomainRequirement> emptyList());
+			List<StandardCredentials> creds = CredentialsProvider.lookupCredentialsInItem(
+					StandardCredentials.class, project, ACL.SYSTEM2,
+					Collections.emptyList());
 
 			ListBoxModel model = new ListBoxModel();
 			model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
@@ -328,12 +329,12 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		}
 	}
 
-	/* 
+	/*
 	 * (non-Javadoc)
 	 * @see jenkins.tasks.SimpleBuildStep#perform(hudson.model.Run, hudson.FilePath, hudson.Launcher, hudson.model.TaskListener)
 	 */
 	@Override
-	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
+	public void perform(@NonNull Run<?, ?> run, @NonNull FilePath workspace, @NonNull Launcher launcher, @NonNull TaskListener listener)
 			throws InterruptedException, IOException
 	{
 		CodeCoverageScanner scanner = new CodeCoverageScanner(this);
