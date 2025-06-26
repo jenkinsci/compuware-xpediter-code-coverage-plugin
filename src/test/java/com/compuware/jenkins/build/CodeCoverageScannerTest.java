@@ -1,14 +1,14 @@
 /**
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2018 Compuware Corporation
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
  * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice
  * shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,12 +52,10 @@ public class CodeCoverageScannerTest
 
 	/**
 	 * Setup that occurs before all tests.
-	 * 
-	 * @throws java.lang.Exception
+	 *
 	 */
 	@BeforeClass
-	public static void classSetUp() throws Exception
-	{
+	public static void classSetUp() {
 		String connectionId = "12345";
 		String credentialsId = "67890";
 		String analysisPropertiesPath = "\\a\\path\\to\\analysis\\properties\\ccanalysis.properties";
@@ -76,14 +74,14 @@ public class CodeCoverageScannerTest
 		String propertiesStr = null;
 		FilePath workspace = m_jenkinsRule.getInstance().getRootPath();
 		PrintStream logger = new PrintStream(System.out);
-		Properties expectedProperties = null;
-		Properties actualProperties = null;
+		Properties expectedProperties;
+		Properties actualProperties;
 
 		// create the analysis properties file
 		Path analysisPropertiesFilePath = Paths.get(workspace.getRemote(), PROPERTIES_FILENAME);
 		List<String> analysisPropertiesFileContent = Arrays.asList("cc.sources=/fileSrc", "cc.repos=FILE.CC.REPOSIT",
 				"cc.system=fileSystem", "cc.test=fileTest", "cc.ddio.overrides=FILE.CC.DDIO");
-		Files.write(analysisPropertiesFilePath, analysisPropertiesFileContent, Charset.forName("UTF-8"),
+		Files.write(analysisPropertiesFilePath, analysisPropertiesFileContent, StandardCharsets.UTF_8,
 				StandardOpenOption.CREATE_NEW);
 
 		try

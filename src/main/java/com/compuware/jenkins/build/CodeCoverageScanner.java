@@ -1,15 +1,15 @@
 /**
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2018, 2019 Compuware Corporation
  * (c) Copyright 2015 - 2019, 2021 BMC Software, Inc.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
  * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice
  * shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
@@ -19,6 +19,7 @@ package com.compuware.jenkins.build;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,7 +53,7 @@ public class CodeCoverageScanner
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param config
 	 *            the <code>CodeCoverageBuilder</code> to use for the scan
 	 */
@@ -63,7 +64,7 @@ public class CodeCoverageScanner
 
 	/**
 	 * Performs the Code Coverage scan.
-	 * 
+	 *
 	 * @param run
 	 *            the current running Jenkins build
 	 * @param workspace
@@ -72,7 +73,7 @@ public class CodeCoverageScanner
 	 *            the way to start a process
 	 * @param listener
 	 *            the build listener
-	 * 
+	 *
 	 * @throws IOException
 	 *             if an error occurs performing the scan
 	 * @throws InterruptedException
@@ -128,7 +129,7 @@ public class CodeCoverageScanner
 				} else {
 					value = ArgumentUtils.escapeForScript(value);
 				}
-				key = ArgumentUtils.prefixWithDash((String) key);
+				key = ArgumentUtils.prefixWithDash(key);
 
 				args.add(key, value);
 			}
@@ -153,7 +154,7 @@ public class CodeCoverageScanner
 	 * Builds and returns a list of properties using the given analysis file path and string.
 	 * <p>
 	 * Properties in the given string take precedence over properties in the file located at the given path.
-	 * 
+	 *
 	 * @param analysisPropertiesFilePath
 	 *            the <code>String</code> path of a file containing analysis properties
 	 * @param analysisPropertiesStr
@@ -162,7 +163,7 @@ public class CodeCoverageScanner
 	 *            the workspace directory
 	 * @param logger
 	 *            the <code>PrintStream</code> to use for capturing log statements
-	 * 
+	 *
 	 * @return the built <code>Properties</code>
 	 */
 	protected Properties buildAnalysisProperties(String analysisPropertiesFilePath, String analysisPropertiesStr,
@@ -200,7 +201,7 @@ public class CodeCoverageScanner
 			// An error should be displayed only if an analysis file was specified in the configuration.
 			if (filePathSpecified)
 			{
-				logger.println("An IOException occurred while obtaining analysis properties from the file: " + e.toString()); //$NON-NLS-1$
+				logger.println("An IOException occurred while obtaining analysis properties from the file: " + e); //$NON-NLS-1$
 				e.printStackTrace(logger);
 			}
 		}
@@ -209,14 +210,14 @@ public class CodeCoverageScanner
 		{
 			try
 			{
-				String filePropertiesStr = new String(bytes, CommonConstants.UTF_8);
+				String filePropertiesStr = new String(bytes, StandardCharsets.UTF_8);
 				logger.println("Analysis properties string from file: " + filePropertiesStr); //$NON-NLS-1$
 				Properties fileProperties = ArgumentUtils.convertStringToProperties(filePropertiesStr);
 				analysisProperties.putAll(fileProperties);
 			}
 			catch (IOException e)
 			{
-				logger.println("An IOException occurred while parsing analysis properties from the file: " + e.toString()); //$NON-NLS-1$
+				logger.println("An IOException occurred while parsing analysis properties from the file: " + e); //$NON-NLS-1$
 				e.printStackTrace(logger);
 			}
 		}
@@ -232,7 +233,7 @@ public class CodeCoverageScanner
 			}
 			catch (IOException e)
 			{
-				logger.println("An IOException occurred while obtaining analysis properties from the UI: " + e.toString()); //$NON-NLS-1$
+				logger.println("An IOException occurred while obtaining analysis properties from the UI: " + e); //$NON-NLS-1$
 				e.printStackTrace(logger);
 			}
 		}
