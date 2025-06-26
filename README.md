@@ -1,5 +1,3 @@
-# BMC AMI DevX Code Debug Code Coverage Plugin
-
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/compuware-xpediter-code-coverage.svg)](https://plugins.jenkins.io/compuware-xpediter-code-coverage) [![GitHub release](https://img.shields.io/github/v/release/jenkinsci/compuware-xpediter-code-coverage.svg?label=release)](https://github.com/jenkinsci/compuware-xpediter-code-coverage-plugin/releases) [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/compuware-xpediter-code-coverage.svg?color=blue)](https://plugins.jenkins.io/compuware-xpediter-code-coverage)
 
 # <img src="docs/images/bmc_brandmark.png" width="45" height="45">BMC AMI DevX Code Debug Code Coverage
