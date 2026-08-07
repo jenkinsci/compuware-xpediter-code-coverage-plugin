@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
 
 import com.compuware.jenkins.build.utils.CodeCoverageConstants;
 import com.compuware.jenkins.common.configuration.CpwrGlobalConfiguration;
@@ -41,6 +40,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 import hudson.util.ArgumentListBuilder;
+import hudson.Util;
 
 /**
  * Class used to initiate a Code Coverage scan. This class will utilize the Topaz command line interface to do the scan.
@@ -122,7 +122,7 @@ public class CodeCoverageScanner
 			logger.print(key + '=' + value + ' ');
 
 			// don't add properties that don't have values
-			if (StringUtils.isNotBlank(value)) {
+			if (Util.fixEmptyAndTrim(value) != null) {
 				if (key.equals(CodeCoverageConstants.SOURCES_PARM)) {
 					value = ArgumentUtils.escapeCommaDelimitedPathsForScript(value);
 				} else {
@@ -173,7 +173,7 @@ public class CodeCoverageScanner
 		// get properties from the file
 		Path filePath = null;
 
-		boolean filePathSpecified = StringUtils.isNotBlank(analysisPropertiesFilePath);
+		boolean filePathSpecified = Util.fixEmptyAndTrim(analysisPropertiesFilePath) != null;
 		if (filePathSpecified)
 		{
 			// the path specified can be absolute or relative to the workspace
@@ -222,7 +222,7 @@ public class CodeCoverageScanner
 		}
 
 		// get properties from the string (these take precedence, so load them after the file properties)
-		if (StringUtils.isNotBlank(analysisPropertiesStr))
+		if (Util.fixEmptyAndTrim(analysisPropertiesStr) != null)
 		{
 			try
 			{
