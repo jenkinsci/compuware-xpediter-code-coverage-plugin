@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -82,10 +81,10 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 	public CodeCoverageBuilder(String connectionId, String credentialsId, String analysisPropertiesPath,
 			String analysisProperties)
 	{
-		m_connectionId = StringUtils.trimToEmpty(connectionId);
-		m_credentialsId = StringUtils.trimToEmpty(credentialsId);
-		m_analysisPropertiesPath = StringUtils.trimToEmpty(analysisPropertiesPath);
-		m_analysisProperties = StringUtils.trimToEmpty(analysisProperties);
+		m_connectionId = Util.fixNull(connectionId).trim();
+		m_credentialsId = Util.fixNull(credentialsId).trim();
+		m_analysisPropertiesPath = Util.fixNull(analysisPropertiesPath).trim();
+		m_analysisProperties = Util.fixNull(analysisProperties).trim();
 	}
 
 	/**
@@ -209,7 +208,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 */
 		public FormValidation doCheckConnectionId(@QueryParameter String connectionId)
 		{
-			String tempValue = StringUtils.trimToEmpty(connectionId);
+			String tempValue = Util.fixNull(connectionId).trim();
 			if (tempValue.isEmpty())
 			{
 				return FormValidation.error(Messages.checkHostConnectionError());
@@ -228,7 +227,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 		 */
 		public FormValidation doCheckCredentialsId(@QueryParameter String credentialsId)
 		{
-			String tempValue = StringUtils.trimToEmpty(credentialsId);
+			String tempValue = Util.fixNull(credentialsId).trim();
 			if (tempValue.isEmpty())
 			{
 				return FormValidation.error(Messages.checkLoginCredentialsError());
@@ -262,7 +261,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 			HostConnection[] hostConnections = globalConfig.getHostConnections();
 
 			ListBoxModel model = new ListBoxModel();
-			model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
+			model.add(new Option("", "", false));
 
 			for (HostConnection connection : hostConnections)
 			{
@@ -305,7 +304,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 					Collections.<DomainRequirement> emptyList());
 
 			ListBoxModel model = new ListBoxModel();
-			model.add(new Option(StringUtils.EMPTY, StringUtils.EMPTY, false));
+			model.add(new Option("", "", false));
 
 			for (StandardCredentials c : creds)
 			{
@@ -318,7 +317,7 @@ public class CodeCoverageBuilder extends Builder implements SimpleBuildStep
 				String description = Util.fixEmptyAndTrim(c.getDescription());
 				try {
 					model.add(new Option(CpwrGlobalConfiguration.get().getCredentialsUser(c)
-							+ (description != null ? (" (" + description + ')') : StringUtils.EMPTY), c.getId(), isSelected)); //$NON-NLS-1$
+							+ (description != null ? (" (" + description + ')') : ""), c.getId(), isSelected)); //$NON-NLS-1$
 				} catch (AbortException e) {
 					LOGGER.log(Level.WARNING, e.getMessage());
 				}
